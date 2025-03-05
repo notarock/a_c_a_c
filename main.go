@@ -28,7 +28,7 @@ func main() {
 		return
 	}
 
-	Generate(chain)
+	Generate(chain) // "oats you are not so washed!"
 }
 
 func ReadFile(filename string) ([]string, error) {
@@ -112,7 +112,7 @@ func Listen() {
 		fmt.Println("Line appended successfully!")
 	})
 
-	client.Join("oatsngoats")
+	client.Join("oatsngoats") // oats please pepeW
 
 	err = client.Connect()
 	if err != nil {
@@ -130,6 +130,7 @@ func Markov() {
 		chain.Add(strings.Split(message, " "))
 	}
 
+	// From teh readme
 	// //Get transition probability of a sequence
 	// prob, _ := chain.TransitionProbability("a", []string{"I"})
 	// fmt.Println(prob)
