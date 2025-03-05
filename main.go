@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"github.com/gempir/go-twitch-irc/v4"
 	"github.com/mb-14/gomarkov"
@@ -15,6 +16,8 @@ import (
 
 var messages []string
 
+const MESSAGE_FILE = "messages.txt"
+
 func main() {
 	// Listen()
 	// fmt.Println("Listening for messages...")
@@ -22,13 +25,31 @@ func main() {
 	// fmt.Println("Generating Markov chain...")
 	// Markov()
 
+	listen := flag.Bool("listen", false, "Listen for chat messages and saves them to "+MESSAGE_FILE)
+
+	flag.Parse()
+	if *listen {
+		fmt.Println("Listening for chat messages...")
+		Listen()
+		os.Exit(0)
+	}
+
 	chain, err := LoadModel()
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	Generate(chain) // "oats you are not so washed!"
+	RunOnTimer(chain, 5) // says things like "oats you are not so washed!"
+}
+
+func RunOnTimer(chain *gomarkov.Chain, interval time.Duration) {
+	for {
+		time.Sleep(interval * time.Second)
+
+		fmt.Println(Generate(chain))
+
+	}
 }
 
 func ReadFile(filename string) ([]string, error) {
@@ -76,18 +97,18 @@ func LoadModel() (*gomarkov.Chain, error) {
 	return chain, nil
 }
 
-func Generate(chain *gomarkov.Chain) {
+func Generate(chain *gomarkov.Chain) string {
 	tokens := []string{gomarkov.StartToken}
 	for tokens[len(tokens)-1] != gomarkov.EndToken {
 		next, _ := chain.Generate(tokens[(len(tokens) - 1):])
 		tokens = append(tokens, next)
 	}
-	fmt.Println(strings.Join(tokens[1:len(tokens)-1], " "))
+	return strings.Join(tokens[1:len(tokens)-1], " ")
 }
 
 func Listen() {
-	// client := twitch.NewClient("yourtwitchusername", "oauth:123123123")
-	client := twitch.NewAnonymousClient() // for an anonymous user (no write capabilities)
+	client := twitch.NewClient("notarock95", "oauth:123123123")
+	// client := twitch.NewAnonymousClient() // for an anonymous user (no write capabilities)
 
 	filename := "messages.txt"
 
@@ -109,7 +130,6 @@ func Listen() {
 			fmt.Println("Error writing to file:", err)
 			return
 		}
-		fmt.Println("Line appended successfully!")
 	})
 
 	client.Join("oatsngoats") // oats please pepeW
