@@ -1,4 +1,6 @@
 github.com/gempir/go-twitch-irc/v4 v4.2.0 h1:OCeff+1aH4CZIOxgKOJ8dQjh+1ppC6sLWrXOcpGZyq4=
 github.com/gempir/go-twitch-irc/v4 v4.2.0/go.mod h1:QsOMMAk470uxQ7EYD9GJBGAVqM/jDrXBNbuePfTauzg=
+github.com/joho/godotenv v1.5.1 h1:7eLL/+HRGLY0ldzfGMeQkb7vMd0as4CfYvUVzLqw0N0=
+github.com/joho/godotenv v1.5.1/go.mod h1:f4LDr5Voq0i2e/R5DDNOoa2zzDfwtkZa6DnEwAbqwq4=
 github.com/mb-14/gomarkov v0.0.0-20231120193207-9cbdc8df67a8 h1:4Z2WmWiMrfaZZYbuw5vx1yv1jfgtf5fuRgSUSxhTy5A=
 github.com/mb-14/gomarkov v0.0.0-20231120193207-9cbdc8df67a8/go.mod h1:6nnTLIXjtAZzRGji0HC3vH+rGM2rKdAkIKgizGlRF6g=

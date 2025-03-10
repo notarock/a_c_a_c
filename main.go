@@ -5,18 +5,28 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/gempir/go-twitch-irc/v4"
-	"github.com/mb-14/gomarkov"
 	"io/ioutil"
 	"math/rand"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/gempir/go-twitch-irc/v4"
+	_ "github.com/joho/godotenv/autoload"
+	"github.com/mb-14/gomarkov"
 )
 
 var messages []string
 
-const MESSAGE_FILE = "messages.txt"
+var CHANNEL = os.Getenv("TWITCH_CHANNEL")
+var TWITCH_USER = os.Getenv("TWITCH_USER")
+var TWITCH_OAUTH_STRING = os.Getenv("TWITCH_OAUTH_STRING")
+
+var MESSAGE_FILE = CHANNEL + ".txt"
+
+const GREEN = "\033[32m"
+const RED = "\033[31m"
+const RESET = "\033[0m"
 
 func main() {
 	// Listen()
@@ -40,14 +50,39 @@ func main() {
 		return
 	}
 
-	RunOnTimer(chain, 5) // says things like "oats you are not so washed!"
+	RunOnTimer(chain, 140) // says things like "oats you are not so washed!"
 }
 
 func RunOnTimer(chain *gomarkov.Chain, interval time.Duration) {
-	for {
-		time.Sleep(interval * time.Second)
+	fmt.Println("Running on timer...")
+	client := twitch.NewClient(TWITCH_USER, TWITCH_OAUTH_STRING)
+	fmt.Println("Connecting to twitch...")
 
-		fmt.Println(Generate(chain))
+	client.Join(CHANNEL) // oats please pepeW
+	fmt.Println("Joined " + CHANNEL)
+
+	go client.Connect()
+
+	for {
+		message := Generate(chain)
+		fmt.Println("Generated message:", message)
+
+		if strings.Contains(message, "@") || strings.Contains(message, "https://") {
+			fmt.Println("Message contains @, skipping...")
+			continue
+		}
+
+		// reader := bufio.NewReader(os.Stdin)
+		// fmt.Print("Yes / No? ")
+		// input, _ := reader.ReadString('\n')
+		// input = strings.TrimSpace(strings.ToLower(input))
+
+		// if input == "yes" {
+		// 	    fmt.Println("Sending message")
+		client.Say(CHANNEL, message)
+		// }
+
+		time.Sleep(interval * time.Second)
 
 	}
 }
@@ -76,7 +111,6 @@ func ReadFile(filename string) ([]string, error) {
 	}
 
 	// Print the lines (for demonstration)
-	fmt.Println("File contents as array of strings:")
 	return lines, err
 }
 
@@ -84,16 +118,19 @@ func LoadModel() (*gomarkov.Chain, error) {
 	chain := gomarkov.NewChain(1)
 	fmt.Println("Adding saved messages to model...")
 
-	filename := "messages.txt"
-	lines, err := ReadFile(filename)
+	lines, err := ReadFile(MESSAGE_FILE)
 	if err != nil {
 		fmt.Println(err)
 		return nil, err
 	}
 
+	fmt.Println("Loaging", len(lines), "messages...")
+
 	for _, line := range lines {
 		chain.Add(strings.Split(line, " "))
 	}
+
+	fmt.Println("Loaded", len(lines), "messages to model")
 	return chain, nil
 }
 
@@ -107,13 +144,11 @@ func Generate(chain *gomarkov.Chain) string {
 }
 
 func Listen() {
-	client := twitch.NewClient("notarock95", "oauth:123123123")
-	// client := twitch.NewAnonymousClient() // for an anonymous user (no write capabilities)
-
-	filename := "messages.txt"
+	// client := twitch.NewClient(TWITCH_USER, TWITCH_OAUTH_STRING)
+	client := twitch.NewAnonymousClient() // for an anonymous user (no write capabilities)
 
 	// Open the file in append mode, create if not exists
-	file, err := os.OpenFile(filename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	file, err := os.OpenFile(MESSAGE_FILE, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 
 	if err != nil {
 		fmt.Println("Error opening file:", err)
@@ -122,7 +157,23 @@ func Listen() {
 	defer file.Close()
 
 	client.OnPrivateMessage(func(message twitch.PrivateMessage) {
-		fmt.Println("Adding message:", message.User.Name+": "+message.Message)
+		var prefix string
+		if message.User.Name == TWITCH_USER {
+			prefix = RED + message.User.Name + ": "
+		} else if strings.Contains(message.Message, "@"+TWITCH_USER) {
+			prefix = GREEN + message.User.Name + ": "
+		} else {
+			prefix = message.User.Name + ": "
+		}
+
+		if message.User.Name == TWITCH_USER ||
+			message.User.Name == "oathybot" ||
+			message.User.Name == "funtoon" ||
+			message.User.Name == "cynanbot" {
+			return
+		}
+
+		fmt.Println("Adding message:", prefix+message.Message+RESET)
 		messages = append(messages, message.Message)
 		// Write the new line
 		_, err = file.WriteString(message.Message + "\n")
@@ -132,7 +183,7 @@ func Listen() {
 		}
 	})
 
-	client.Join("oatsngoats") // oats please pepeW
+	client.Join(CHANNEL) // oats please pepeW
 
 	err = client.Connect()
 	if err != nil {
