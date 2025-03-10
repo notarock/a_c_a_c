@@ -50,7 +50,50 @@ func main() {
 		return
 	}
 
-	RunOnTimer(chain, 140) // says things like "oats you are not so washed!"
+	// RunOnTimer(chain, 140)
+	RunOnMessageCount(chain, 20)
+}
+
+func RunOnMessageCount(chain *gomarkov.Chain, interval int) {
+	fmt.Println("Running on nb of messages...")
+	client := twitch.NewClient(TWITCH_USER, TWITCH_OAUTH_STRING)
+	fmt.Println("Connecting to twitch...")
+	client.Join(CHANNEL)
+	fmt.Println("Joined " + CHANNEL)
+
+	n_till_next := interval
+
+	client.OnPrivateMessage(func(message twitch.PrivateMessage) {
+		n_till_next = n_till_next - 1
+
+		fmt.Println("Saw message:", message.Message)
+		fmt.Println("Messages till next:", n_till_next)
+
+		if n_till_next > 0 {
+			return
+		}
+
+		fmt.Println("Generating message...")
+
+		response := FilteredMessage(chain)
+
+		client.Say(CHANNEL, response)
+
+		n_till_next = interval
+	})
+
+	client.Connect()
+}
+
+func FilteredMessage(chain *gomarkov.Chain) string {
+	response := Generate(chain)
+
+	for strings.Contains(response, "@") || strings.Contains(response, "https://") {
+		fmt.Printf("Message %s contains @, skipping.../n", response)
+		response = Generate(chain) // try again
+	}
+
+	return response
 }
 
 func RunOnTimer(chain *gomarkov.Chain, interval time.Duration) {
