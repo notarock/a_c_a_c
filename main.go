@@ -23,6 +23,7 @@ var TWITCH_USER = os.Getenv("TWITCH_USER")
 var TWITCH_OAUTH_STRING = os.Getenv("TWITCH_OAUTH_STRING")
 
 var MESSAGE_FILE = CHANNEL + ".txt"
+var SAVED_MESSAGES_FILE = "sent.txt"
 
 const GREEN = "\033[32m"
 const RED = "\033[31m"
@@ -50,8 +51,8 @@ func main() {
 		return
 	}
 
-	// RunOnTimer(chain, 140)
-	RunOnMessageCount(chain, 20)
+	// RunOnTimer(chain, 180)
+	RunOnMessageCount(chain, 60)
 }
 
 func RunOnMessageCount(chain *gomarkov.Chain, interval int) {
@@ -63,10 +64,13 @@ func RunOnMessageCount(chain *gomarkov.Chain, interval int) {
 
 	n_till_next := interval
 
+	file, err := os.OpenFile(SAVED_MESSAGES_FILE, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+
 	client.OnPrivateMessage(func(message twitch.PrivateMessage) {
 		n_till_next = n_till_next - 1
 
-		fmt.Println("Saw message:", message.Message)
+		chain.Add(strings.Split(message.Message, " "))
+
 		fmt.Println("Messages till next:", n_till_next)
 
 		if n_till_next > 0 {
@@ -78,6 +82,12 @@ func RunOnMessageCount(chain *gomarkov.Chain, interval int) {
 		response := FilteredMessage(chain)
 
 		client.Say(CHANNEL, response)
+
+		_, err = file.WriteString(response + "\n")
+		if err != nil {
+			fmt.Println("Error writing to file:", err)
+			return
+		}
 
 		n_till_next = interval
 	})
