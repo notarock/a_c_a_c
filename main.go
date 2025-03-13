@@ -28,11 +28,10 @@ const RED = "\033[31m"
 const RESET = "\033[0m"
 
 func main() {
-	// Listen()
-	// fmt.Println("Listening for messages...")
-	// time.Sleep(10 * time.Second)
-	// fmt.Println("Generating Markov chain...")
-	// Markov()
+	if BASE_PATH == "" || CHANNEL == "" || TWITCH_USER == "" || TWITCH_OAUTH_STRING == "" {
+		fmt.Println("Missing environment variables")
+		return
+	}
 
 	listen := flag.Bool("listen", false, "Listen for chat messages and saves them to "+MESSAGE_FILE)
 
