@@ -16,7 +16,7 @@ func (c *Chain) FilteredMessage() string {
 	response := c.generateMessage()
 
 	for validMessage(response) {
-		fmt.Printf("Message prohibited content, skipping.../n", response)
+		fmt.Printf("Message '%s' prohibited content, skipping.../n", response)
 		response = c.generateMessage()
 	}
 
