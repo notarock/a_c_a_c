@@ -15,7 +15,7 @@ var PROHIBITED_PATTERNS = []string{"@", "https://"}
 func (c *Chain) FilteredMessage() string {
 	response := c.generateMessage()
 
-	for validMessage(response) {
+	for !validMessage(response) {
 		fmt.Printf("Message '%s' prohibited content, skipping.../n", response)
 		response = c.generateMessage()
 	}
