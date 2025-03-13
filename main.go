@@ -33,8 +33,8 @@ func main() {
 
 	chain, err := chain.NewChain(chain.ChainConfig{
 		Saving:                true,
-		SavedMessagesFilepath: SAVED_MESSAGES_FILE,
-		SentMessagesFilepath:  MESSAGE_FILE,
+		SavedMessagesFilepath: MESSAGE_FILE,
+		SentMessagesFilepath:  SAVED_MESSAGES_FILE,
 	})
 
 	if err != nil {

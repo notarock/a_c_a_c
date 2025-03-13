@@ -9,7 +9,7 @@ import (
  * Save a chat message to the chat message file
  * */
 func (c *Chain) SaveChatMessage(message string) error {
-	err := c.Save(c.sentMessagesFilepath, message)
+	err := c.Save(c.savedMessagesFilepath, message)
 	if err != nil {
 		return fmt.Errorf("error while saving chat message: %v", err)
 	}
@@ -21,7 +21,7 @@ func (c *Chain) SaveChatMessage(message string) error {
  * Save a sent message to the sent message file
  * */
 func (c *Chain) SaveSentMessage(message string) error {
-	err := c.Save(c.savedMessagesFilepath, message)
+	err := c.Save(c.sentMessagesFilepath, message)
 	if err != nil {
 		return fmt.Errorf("error while saving sent message: %v", err)
 	}
