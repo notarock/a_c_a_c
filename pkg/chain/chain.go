@@ -31,6 +31,7 @@ func NewChain(config ChainConfig) (*Chain, error) {
 		chain:                 chain,
 		sentMessagesFilepath:  config.SentMessagesFilepath,
 		savedMessagesFilepath: config.SavedMessagesFilepath,
+		Saving:                config.Saving,
 	}
 
 	err := c.LoadModel()
