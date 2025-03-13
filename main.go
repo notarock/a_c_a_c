@@ -62,9 +62,14 @@ func RunOnMessageCount(chain *chain.Chain, interval int) {
 
 	n_till_next := interval
 
+	fmt.Println("Adding message hook...")
 	client.OnPrivateMessage(func(message twitch.PrivateMessage) {
 		n_till_next = n_till_next - 1
-		fmt.Print(".")
+		if ENV == "production" {
+			fmt.Print(".")
+		} else {
+			fmt.Println(message.Message)
+		}
 
 		if IgnoreBotMessages(message.User.Name) {
 			return
@@ -105,8 +110,13 @@ func RunOnMessageCount(chain *chain.Chain, interval int) {
 		fmt.Print("Listening")
 	})
 
+	fmt.Println("Hook added.")
+
 	fmt.Print("Listening")
-	client.Connect()
+	err := client.Connect()
+	if err != nil {
+		log.Fatalln(err)
+	}
 }
 
 func IgnoreBotMessages(user string) bool {
