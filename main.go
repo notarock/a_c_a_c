@@ -14,13 +14,14 @@ import (
 	"github.com/mb-14/gomarkov"
 )
 
+var BASE_PATH = os.Getenv("BASE_PATH")
 var CHANNEL = os.Getenv("TWITCH_CHANNEL")
 var TWITCH_USER = os.Getenv("TWITCH_USER")
 var TWITCH_OAUTH_STRING = os.Getenv("TWITCH_OAUTH_STRING")
 var ENV = os.Getenv("ENV")
 
-var MESSAGE_FILE = CHANNEL + ".txt"
-var SAVED_MESSAGES_FILE = "sent.txt"
+var MESSAGE_FILE = BASE_PATH + CHANNEL + ".txt"
+var SAVED_MESSAGES_FILE = BASE_PATH + "sent.txt"
 
 const GREEN = "\033[32m"
 const RED = "\033[31m"
