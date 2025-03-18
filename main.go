@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"slices"
+	"strings"
 
-	gotwitch "github.com/gempir/go-twitch-irc/v4"
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/notarock/a_c_a_r/pkg/chain"
+	"github.com/notarock/a_c_a_r/pkg/runner"
 	"github.com/notarock/a_c_a_r/pkg/twitch"
 )
 
@@ -18,8 +18,8 @@ var TWITCH_USER = os.Getenv("TWITCH_USER")
 var TWITCH_OAUTH_STRING = os.Getenv("TWITCH_OAUTH_STRING")
 var ENV = os.Getenv("ENV")
 
-var MESSAGE_FILE = BASE_PATH + CHANNEL + ".txt"
-var SAVED_MESSAGES_FILE = BASE_PATH + "sent.txt"
+var MESSAGE_FILE_PATTERN = "%s/%s.txt"             // BASEPATH-CHANNEL.txt
+var SAVED_MESSAGES_FILE_PATTERN = "%s/%s-sent.txt" // BASEPATH-CHANNEL-sent.txt
 
 const GREEN = "\033[32m"
 const RED = "\033[31m"
@@ -31,73 +31,51 @@ func main() {
 		return
 	}
 
-	if ENV != "production" {
-		fmt.Println("Environment: ", ENV)
-		fmt.Println("Channel: ", CHANNEL)
-		fmt.Println("Saving chat messages to: ", MESSAGE_FILE)
-		fmt.Println("Saving sent messages to: ", SAVED_MESSAGES_FILE)
-	}
+	channels := strings.Split(CHANNEL, ",")
+	var runners []*runner.MessageCountdownRunner
 
-	chain, err := chain.NewChain(chain.ChainConfig{
-		Saving:                true,
-		SavedMessagesFilepath: MESSAGE_FILE,
-		SentMessagesFilepath:  SAVED_MESSAGES_FILE,
-	})
+	for _, channel := range channels {
 
-	if err != nil {
-		log.Fatal(err)
-	}
+		savedMessagesFilepath := fmt.Sprintf(MESSAGE_FILE_PATTERN, BASE_PATH, channel)
+		sentMessagesFilepath := fmt.Sprintf(SAVED_MESSAGES_FILE_PATTERN, BASE_PATH, channel)
 
-	client := twitch.NewClient(twitch.ClientConfig{
-		Username: TWITCH_USER,
-		OAuth:    TWITCH_OAUTH_STRING,
-		Channel:  CHANNEL,
-		Sending:  ENV == "production",
-	})
-
-	RunOnMessageCount(chain, client, 60)
-}
-
-func RunOnMessageCount(chain *chain.Chain, client *twitch.TwitchClient, interval int) {
-	messageCountdown := interval
-
-	fmt.Println("Adding message hook...")
-	client.AddMessageHook(func(message gotwitch.PrivateMessage) {
-
-		messageCountdown = messageCountdown - 1 // Decrement countdown
-		if IgnoreMessagesFromBots(message.User.Name) {
-			return
+		if ENV != "production" {
+			fmt.Println("Environment: ", ENV)
+			fmt.Println("Channel: ", CHANNEL)
+			fmt.Println("Base path: ", BASE_PATH)
+			fmt.Println("Saving chat messages to: ", savedMessagesFilepath)
+			fmt.Println("Saving sent messages to: ", sentMessagesFilepath)
 		}
 
-		chain.AddMessage(message.Message)             // Learn
-		err := chain.SaveChatMessage(message.Message) // Save to file
+		chain, err := chain.NewChain(chain.ChainConfig{
+			Saving:                true,
+			SavedMessagesFilepath: savedMessagesFilepath,
+			SentMessagesFilepath:  sentMessagesFilepath,
+		})
+
 		if err != nil {
-			fmt.Println("Error writing message to file:", err)
-			return
+			log.Fatal(err)
 		}
 
-		fmt.Println("Saved:", message.Message)
+		client := twitch.NewClient(twitch.ClientConfig{
+			Username: TWITCH_USER,
+			OAuth:    TWITCH_OAUTH_STRING,
+			Channel:  channel,
+			Sending:  ENV == "production",
+		})
 
-		// Don't send a message if we have not reached the countdown yet
-		if messageCountdown > 0 {
-			return
-		}
+		r := runner.NewMessageCountdownRunner(runner.MessageCountdownConfig{
+			Client:   client,
+			Chain:    chain,
+			Interval: 5,
+		})
 
-		messageCountdown = interval // Reset countdown
-
-		response := chain.FilteredMessage() // Generate a response
-
-		client.SendMessage(response)    // Send the message
-		chain.SaveSentMessage(response) // Save the sent message
-	})
-
-	fmt.Println("Hook added, now listening.")
-	err := client.Connect()
-	if err != nil {
-		log.Fatalln(err)
+		runners = append(runners, r)
 	}
-}
 
-func IgnoreMessagesFromBots(user string) bool {
-	return slices.Contains([]string{"oathybot", "funtoon", "cynanbot", "mandoobot", TWITCH_USER}, user)
+	for _, runner := range runners {
+		go runner.Run()
+	}
+
+	select {}
 }
