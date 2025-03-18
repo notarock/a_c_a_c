@@ -5,11 +5,11 @@ import (
 	"log"
 	"os"
 	"slices"
-	"time"
 
-	"github.com/gempir/go-twitch-irc/v4"
+	gotwitch "github.com/gempir/go-twitch-irc/v4"
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/notarock/a_c_a_r/pkg/chain"
+	"github.com/notarock/a_c_a_r/pkg/twitch"
 )
 
 var BASE_PATH = os.Getenv("BASE_PATH")
@@ -31,6 +31,13 @@ func main() {
 		return
 	}
 
+	if ENV != "production" {
+		fmt.Println("Environment: ", ENV)
+		fmt.Println("Channel: ", CHANNEL)
+		fmt.Println("Saving chat messages to: ", MESSAGE_FILE)
+		fmt.Println("Saving sent messages to: ", SAVED_MESSAGES_FILE)
+	}
+
 	chain, err := chain.NewChain(chain.ChainConfig{
 		Saving:                true,
 		SavedMessagesFilepath: MESSAGE_FILE,
@@ -41,67 +48,47 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if ENV != "production" {
-		fmt.Println("Environment: ", ENV)
-		fmt.Println("Channel: ", CHANNEL)
-		fmt.Println("Saving chat messages to: ", MESSAGE_FILE)
-		fmt.Println("Saving sent messages to: ", SAVED_MESSAGES_FILE)
-	}
+	client := twitch.NewClient(twitch.ClientConfig{
+		Username: TWITCH_USER,
+		OAuth:    TWITCH_OAUTH_STRING,
+		Channel:  CHANNEL,
+		Sending:  ENV == "production",
+	})
 
-	// RunOnTimer(chain, 180)
-	RunOnMessageCount(chain, 60)
+	RunOnMessageCount(chain, client, 60)
 }
 
-func RunOnMessageCount(chain *chain.Chain, interval int) {
-	fmt.Printf("Sending messages every %d chat messages!\n", interval)
-	client := twitch.NewClient(TWITCH_USER, TWITCH_OAUTH_STRING)
-	// client := twitch.NewAnonymousClient() // for an anonymous user (no write capabilities)
-	fmt.Println("Connecting to twitch...")
-	client.Join(CHANNEL)
-	fmt.Println("Joined " + CHANNEL)
-
-	n_till_next := interval
+func RunOnMessageCount(chain *chain.Chain, client *twitch.TwitchClient, interval int) {
+	messageCountdown := interval
 
 	fmt.Println("Adding message hook...")
-	client.OnPrivateMessage(func(message twitch.PrivateMessage) {
-		n_till_next = n_till_next - 1
-		if IgnoreBotMessages(message.User.Name) {
+	client.AddMessageHook(func(message gotwitch.PrivateMessage) {
+
+		messageCountdown = messageCountdown - 1 // Decrement countdown
+		if IgnoreMessagesFromBots(message.User.Name) {
 			return
 		}
 
-		fmt.Println("Saved: ", message.Message)
-
-		chain.AddMessage(message.Message)
-		err := chain.SaveChatMessage(message.Message)
+		chain.AddMessage(message.Message)             // Learn
+		err := chain.SaveChatMessage(message.Message) // Save to file
 		if err != nil {
 			fmt.Println("Error writing message to file:", err)
 			return
 		}
 
-		// Don't send a message if we're not ready
-		if n_till_next > 0 {
+		fmt.Println("Saved:", message.Message)
+
+		// Don't send a message if we have not reached the countdown yet
+		if messageCountdown > 0 {
 			return
 		}
 
-		// Reset the counter
-		n_till_next = interval
-		fmt.Print("\n")
+		messageCountdown = interval // Reset countdown
 
-		response := chain.FilteredMessage()
+		response := chain.FilteredMessage() // Generate a response
 
-		// Sleep a bit before sending the message to make it look a bit more natural
-		time.Sleep(1 * time.Second)
-
-		if ENV == "production" {
-			// Send the message
-			fmt.Printf("Sent to %s: %s\n", CHANNEL, response)
-			client.Say(CHANNEL, response)
-		} else {
-			// Present to send the message
-			fmt.Printf("I would have sent to %s: %s\n", CHANNEL, response)
-		}
-
-		chain.SaveSentMessage(response)
+		client.SendMessage(response)    // Send the message
+		chain.SaveSentMessage(response) // Save the sent message
 	})
 
 	fmt.Println("Hook added, now listening.")
@@ -111,40 +98,6 @@ func RunOnMessageCount(chain *chain.Chain, interval int) {
 	}
 }
 
-func IgnoreBotMessages(user string) bool {
-	return slices.Contains([]string{"oathybot", "funtoon", "cynanbot", TWITCH_USER}, user)
+func IgnoreMessagesFromBots(user string) bool {
+	return slices.Contains([]string{"oathybot", "funtoon", "cynanbot", "mandoobot", TWITCH_USER}, user)
 }
-
-// func RunOnTimer(chain *gomarkov.Chain, interval time.Duration) {
-// 	fmt.Println("Running on timer...")
-// 	client := twitch.NewClient(TWITCH_USER, TWITCH_OAUTH_STRING)
-// 	fmt.Println("Connecting to twitch...")
-
-// 	client.Join(CHANNEL) // oats please pepeW
-// 	fmt.Println("Joined " + CHANNEL)
-
-// 	go client.Connect()
-
-// 	for {
-// 		message := Generate(chain)
-// 		fmt.Println("Generated message:", message)
-
-// 		if strings.Contains(message, "@") || strings.Contains(message, "https://") {
-// 			fmt.Println("Message contains @, skipping...")
-// 			continue
-// 		}
-
-// 		// reader := bufio.NewReader(os.Stdin)
-// 		// fmt.Print("Yes / No? ")
-// 		// input, _ := reader.ReadString('\n')
-// 		// input = strings.TrimSpace(strings.ToLower(input))
-
-// 		// if input == "yes" {
-// 		// 	    fmt.Println("Sending message")
-// 		client.Say(CHANNEL, message)
-// 		// }
-
-// 		time.Sleep(interval * time.Second)
-
-// 	}
-// }
