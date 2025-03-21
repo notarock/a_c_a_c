@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 
 	_ "github.com/joho/godotenv/autoload"
@@ -12,6 +13,7 @@ import (
 	"github.com/notarock/a_c_a_r/pkg/twitch"
 )
 
+var COUNTDOWN = os.Getenv("COUNTDOWN")
 var BASE_PATH = os.Getenv("BASE_PATH")
 var CHANNEL = os.Getenv("TWITCH_CHANNEL")
 var TWITCH_USER = os.Getenv("TWITCH_USER")
@@ -26,9 +28,14 @@ const RED = "\033[31m"
 const RESET = "\033[0m"
 
 func main() {
-	if BASE_PATH == "" || CHANNEL == "" || TWITCH_USER == "" || TWITCH_OAUTH_STRING == "" {
+	if BASE_PATH == "" || CHANNEL == "" || TWITCH_USER == "" || TWITCH_OAUTH_STRING == "" || COUNTDOWN == "" {
 		fmt.Println("Missing environment variables")
 		return
+	}
+
+	countdownInterval, err := strconv.Atoi(COUNTDOWN)
+	if err != nil {
+		log.Fatalf("Failed to read COUNTDOWN as int: %v", err)
 	}
 
 	channels := strings.Split(CHANNEL, ",")
@@ -67,7 +74,7 @@ func main() {
 		r := runner.NewMessageCountdownRunner(runner.MessageCountdownConfig{
 			Client:   client,
 			Chain:    chain,
-			Interval: 5,
+			Interval: countdownInterval,
 		})
 
 		runners = append(runners, r)
