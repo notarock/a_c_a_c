@@ -10,10 +10,10 @@ import (
  * Return the content of a file as a string
  * */
 func ReadFile(filename string) ([]string, error) {
-	// Open the file
-	file, err := os.Open(filename)
+	// Ensure the file exists or create it
+	file, err := os.OpenFile(filename, os.O_RDONLY|os.O_CREATE, 0644)
 	if err != nil {
-		fmt.Println("Error opening file:", err)
+		fmt.Println("Error opening/creating file:", err)
 		return nil, err
 	}
 	defer file.Close()
@@ -32,6 +32,5 @@ func ReadFile(filename string) ([]string, error) {
 		return nil, err
 	}
 
-	// Print the lines (for demonstration)
-	return lines, err
+	return lines, nil
 }
