@@ -39,6 +39,7 @@ func NewClient(config ClientConfig) *TwitchClient {
 		oauth:    config.OAuth,
 		Channel:  config.Channel,
 		Username: config.Username,
+		Sending:  config.Sending,
 	}
 }
 
