@@ -16,12 +16,17 @@ type Chain struct {
 	sentMessagesFilepath  string
 	savedMessagesFilepath string
 	Saving                bool
+	IgnoreParrots         bool
+
+	// To keep track of the last message
+	lastMessage string
 }
 
 type ChainConfig struct {
 	SentMessagesFilepath  string
 	SavedMessagesFilepath string
 	Saving                bool
+	IgnoreParrots         bool
 }
 
 func NewChain(config ChainConfig) (*Chain, error) {
@@ -32,6 +37,7 @@ func NewChain(config ChainConfig) (*Chain, error) {
 		sentMessagesFilepath:  config.SentMessagesFilepath,
 		savedMessagesFilepath: config.SavedMessagesFilepath,
 		Saving:                config.Saving,
+		IgnoreParrots:         config.IgnoreParrots,
 	}
 
 	err := c.LoadModel()

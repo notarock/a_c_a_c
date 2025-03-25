@@ -7,7 +7,8 @@ import (
 	"github.com/mb-14/gomarkov"
 )
 
-var PROHIBITED_PATTERNS = []string{"@", "https://"}
+var PROHIBITED_PATTERNS = []string{"https://", "twitch.tv"}
+var PROHIBITED_MESSAGES = []string{"acac"}
 
 /**
  * Generate a message that was filtered for prohibited content
@@ -19,6 +20,8 @@ func (c *Chain) FilteredMessage() string {
 		fmt.Printf("Message '%s' prohibited content, skipping.../n", response)
 		response = c.generateMessage()
 	}
+
+	c.lastMessage = response
 
 	return response
 }
@@ -41,6 +44,12 @@ func (c *Chain) generateMessage() string {
  * Validate a message against prohibited patterns
  * */
 func validMessage(message string) bool {
+	for _, prohibitedMessage := range PROHIBITED_MESSAGES {
+		if message == prohibitedMessage {
+			return false
+		}
+	}
+
 	for _, pattern := range PROHIBITED_PATTERNS {
 		if strings.Contains(message, pattern) {
 			return false
@@ -48,4 +57,11 @@ func validMessage(message string) bool {
 	}
 
 	return true
+}
+
+/**
+ * Check if a message is similar to what was just sent
+ * */
+func (c *Chain) IsParrot(message string) bool {
+	return c.lastMessage == message
 }

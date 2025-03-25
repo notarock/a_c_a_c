@@ -14,6 +14,7 @@ import (
 )
 
 var COUNTDOWN = os.Getenv("COUNTDOWN")
+var IGNORE_PARROTS = os.Getenv("IGNORE_PARROTS") == "true"
 var BASE_PATH = os.Getenv("BASE_PATH")
 var CHANNEL = os.Getenv("TWITCH_CHANNEL")
 var TWITCH_USER = os.Getenv("TWITCH_USER")
@@ -48,7 +49,7 @@ func main() {
 
 		if ENV != "production" {
 			fmt.Println("Environment: ", ENV)
-			fmt.Println("Channel: ", CHANNEL)
+			fmt.Println("Channel: ", GREEN, channel, RESET)
 			fmt.Println("Base path: ", BASE_PATH)
 			fmt.Println("Saving chat messages to: ", savedMessagesFilepath)
 			fmt.Println("Saving sent messages to: ", sentMessagesFilepath)
@@ -56,6 +57,7 @@ func main() {
 
 		chain, err := chain.NewChain(chain.ChainConfig{
 			Saving:                true,
+			IgnoreParrots:         IGNORE_PARROTS,
 			SavedMessagesFilepath: savedMessagesFilepath,
 			SentMessagesFilepath:  sentMessagesFilepath,
 		})

@@ -9,6 +9,9 @@ import (
 	"github.com/notarock/a_c_a_r/pkg/twitch"
 )
 
+const RED = "\033[31m"
+const RESET = "\033[0m"
+
 type MessageCountdownRunner struct {
 	client    *twitch.TwitchClient
 	chain     *chain.Chain
@@ -33,11 +36,18 @@ func NewMessageCountdownRunner(config MessageCountdownConfig) *MessageCountdownR
 
 	runner.client.AddMessageHook(func(message gotwitch.PrivateMessage) {
 
-		runner.countdown = runner.countdown - 1 // Decrement countdown
+		// Don't learn messages from ignored users (bots)
 		if runner.client.IsUserIgnored(message.User.Name) {
 			return
 		}
 
+		// Don't learn parroted messages (if enabled)
+		if runner.chain.IsParrot(message.Message) && runner.chain.IgnoreParrots {
+			fmt.Println(RED, runner.client.Channel, ":", message.Message, RESET)
+			return
+		}
+
+		runner.countdown = runner.countdown - 1              // Decrement countdown
 		runner.chain.AddMessage(message.Message)             // Learn
 		err := runner.chain.SaveChatMessage(message.Message) // Save to file
 		if err != nil {
@@ -45,6 +55,7 @@ func NewMessageCountdownRunner(config MessageCountdownConfig) *MessageCountdownR
 			return
 		}
 
+		// Log message
 		fmt.Println(runner.client.Channel, ":", message.Message)
 
 		// Don't send a message if we have not reached the countdown yet
@@ -52,8 +63,9 @@ func NewMessageCountdownRunner(config MessageCountdownConfig) *MessageCountdownR
 			return
 		}
 
-		runner.countdown = runner.interval // Reset countdown
+		// Countdown reached, send a message and reset countdown
 
+		runner.countdown = runner.interval         // Reset countdown
 		response := runner.chain.FilteredMessage() // Generate a response
 
 		runner.client.SendMessage(response)    // Send the message
