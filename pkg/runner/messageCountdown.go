@@ -57,7 +57,7 @@ func NewMessageCountdownRunner(config MessageCountdownConfig) *MessageCountdownR
 		}
 
 		// Log message
-		fmt.Println(runner.client.Channel, ":", message.Message)
+		fmt.Println(runner.client.Channel, "(", runner.countdown, ")", ":", message.Message)
 
 		// Don't send a message if we have not reached the countdown yet
 		if runner.countdown > 0 {
