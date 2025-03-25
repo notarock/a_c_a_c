@@ -32,7 +32,7 @@ func NewClient(config ClientConfig) *TwitchClient {
 	}
 
 	client.Join(config.Channel)
-	fmt.Println("Joined channel" + config.Channel)
+	fmt.Println("Joined channel", config.Channel)
 
 	return &TwitchClient{
 		client:   client,

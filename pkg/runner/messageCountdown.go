@@ -11,6 +11,7 @@ import (
 
 const RED = "\033[31m"
 const RESET = "\033[0m"
+const PARROT = "🦜"
 
 type MessageCountdownRunner struct {
 	client    *twitch.TwitchClient
@@ -43,7 +44,7 @@ func NewMessageCountdownRunner(config MessageCountdownConfig) *MessageCountdownR
 
 		// Don't learn parroted messages (if enabled)
 		if runner.chain.IsParrot(message.Message) && runner.chain.IgnoreParrots {
-			fmt.Println(RED, runner.client.Channel, ":", message.Message, RESET)
+			fmt.Println(PARROT, RED, runner.client.Channel, ":", message.Message, RESET)
 			return
 		}
 
