@@ -18,9 +18,9 @@ A simple and lightweight Twitch chat bot that learns from chat messages and gene
 
 ## I want this thing on my channel. What do I do?
 
-I am currently hosting a copy of it and I have no problem with adding your twitch channel to the list of joined channel. Try politely asking.
+I am currently hosting a copy of it and I have no problem adding your twitch channel to the list of joined channel.
 
-Open an issue to get in touch, or reach out in some ways or another idk.
+ Ask politely. Open an issue to get in touch, or reach out in some ways or another idk.
 
 There will be an issue template for [Hosting Requests] soon :tm:  
 
