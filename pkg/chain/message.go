@@ -7,7 +7,7 @@ import (
 	"github.com/mb-14/gomarkov"
 )
 
-var PROHIBITED_PATTERNS = []string{"https://", "twitch.tv"}
+var PROHIBITED_PATTERNS = []string{"https://", "twitch.tv", "@"}
 var PROHIBITED_MESSAGES = []string{"acac"}
 
 /**
