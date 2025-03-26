@@ -17,6 +17,8 @@ type Chain struct {
 	savedMessagesFilepath string
 	Saving                bool
 	IgnoreParrots         bool
+	ProhibitedStrings     []string
+	ProhibitedMessages    []string
 
 	// To keep track of the last message
 	lastMessage string
@@ -27,6 +29,8 @@ type ChainConfig struct {
 	SavedMessagesFilepath string
 	Saving                bool
 	IgnoreParrots         bool
+	ProhibitedStrings     []string
+	ProhibitedMessages    []string
 }
 
 func NewChain(config ChainConfig) (*Chain, error) {
@@ -38,6 +42,8 @@ func NewChain(config ChainConfig) (*Chain, error) {
 		savedMessagesFilepath: config.SavedMessagesFilepath,
 		Saving:                config.Saving,
 		IgnoreParrots:         config.IgnoreParrots,
+		ProhibitedStrings:     config.ProhibitedStrings,
+		ProhibitedMessages:    config.ProhibitedMessages,
 	}
 
 	err := c.LoadModel()

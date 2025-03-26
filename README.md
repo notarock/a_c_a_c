@@ -43,7 +43,10 @@ The bot can be configured using a `.env` file or via environment variables.
 | `IGNORE_PARROTS` | Flag to ignore users who copy the last bot's messages. Prevent learning from the bot's own gibberish. | `"true"`/`"false"` |
 | `TWITCH_USER` | Username of the account which this bot operates under. | `"a_c_a_c"` |
 | `TWITCH_OAUTH_STRING` | Your account's oauth string to authenticate with twitch chat. | `"oauth:123123123123123"` |
-| `TWITCH_CHANNEL` | Comma separated list of twitch channels to connect to. Every channel gets their own message db and as a result, their own "chat personality". | `"bozo,thelegend27"` |
+| `TWITCH_CHANNELS` | Comma separated list of twitch channels to connect to. Every channel gets their own message db and as a result, their own "chat personality". | `"bozo,thelegend27"` |
+| `TWITCH_BOT_USERNAMES` | Comma separated list of twitch bot in the channel. Bot users are added to the ignore list. | `"nightbot,myownbot,funtoon"` |
+| `PROHIBITED_STRINGS` | Comma separated list of strings that will not be sent by the bot. Use this to filter out links, user mentions, etc. | `"https://,twitch.tv,@"` |
+| `PROHIBITED_MESSAGES` | Comma separated list of messages that will not be sent by the bot. Use this to filter out full messages that should not be sent. | `"acac"` |
 
 ## Usage
 

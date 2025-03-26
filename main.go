@@ -16,11 +16,14 @@ import (
 var COUNTDOWN = os.Getenv("COUNTDOWN")
 var IGNORE_PARROTS = os.Getenv("IGNORE_PARROTS") == "true"
 var BASE_PATH = os.Getenv("BASE_PATH")
-var CHANNELS = strings.Split(os.Getenv("TWITCH_CHANNELS"), ",")
-var BOTS = strings.Split(os.Getenv("TWITCH_BOT_USERNAMES"), ",")
 var TWITCH_USER = os.Getenv("TWITCH_USER")
 var TWITCH_OAUTH_STRING = os.Getenv("TWITCH_OAUTH_STRING")
 var ENV = os.Getenv("ENV")
+var CHANNELS = strings.Split(os.Getenv("TWITCH_CHANNELS"), ",")
+var BOTS = strings.Split(os.Getenv("TWITCH_BOT_USERNAMES"), ",")
+
+var PROHIBITED_STRINGS = strings.Split(os.Getenv("PROHIBITED_STRINGS"), ",")
+var PROHIBITED_MESSAGES = strings.Split(os.Getenv("PROHIBITED_MESSAGES"), ",")
 
 var MESSAGE_FILE_PATTERN = "%s/%s.txt"             // BASEPATH-CHANNEL.txt
 var SAVED_MESSAGES_FILE_PATTERN = "%s/%s-sent.txt" // BASEPATH-CHANNEL-sent.txt
@@ -60,6 +63,8 @@ func main() {
 			IgnoreParrots:         IGNORE_PARROTS,
 			SavedMessagesFilepath: savedMessagesFilepath,
 			SentMessagesFilepath:  sentMessagesFilepath,
+			ProhibitedStrings:     PROHIBITED_STRINGS,
+			ProhibitedMessages:    PROHIBITED_MESSAGES,
 		})
 
 		if err != nil {
