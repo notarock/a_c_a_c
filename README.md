@@ -1,6 +1,6 @@
 # a cheap a_n_i_v clone
 
-A simple and lightweight Twitch chat bot that learns from chat messages and generates responses using the Markov chain algorithm.
+A simple and lightweight Twitch chat bot that learns from chat messages and generates responses using the Markov chain algorithm, similar to BinyotBot, a_n_i_v, etc.
 
 > [!WARNING]  
 > Before adding this bot to any channel, make sure that you have the streamer's permission. The messages this bot generates are clearly gibberish 50% of the time, and people *will* find out the user is not human sooner than you think. This *will* leads to you getting banned in most cases.
