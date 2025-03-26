@@ -1,4 +1,4 @@
-module github.com/notarock/a_c_a_r
+module github.com/notarock/a_c_a_c
 
 go 1.22.12
 

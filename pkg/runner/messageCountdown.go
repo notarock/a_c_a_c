@@ -5,8 +5,8 @@ import (
 
 	gotwitch "github.com/gempir/go-twitch-irc/v4"
 
-	"github.com/notarock/a_c_a_r/pkg/chain"
-	"github.com/notarock/a_c_a_r/pkg/twitch"
+	"github.com/notarock/a_c_a_c/pkg/chain"
+	"github.com/notarock/a_c_a_c/pkg/twitch"
 )
 
 const RED = "\033[31m"

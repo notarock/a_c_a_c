@@ -8,9 +8,9 @@ import (
 	"strings"
 
 	_ "github.com/joho/godotenv/autoload"
-	"github.com/notarock/a_c_a_r/pkg/chain"
-	"github.com/notarock/a_c_a_r/pkg/runner"
-	"github.com/notarock/a_c_a_r/pkg/twitch"
+	"github.com/notarock/a_c_a_c/pkg/chain"
+	"github.com/notarock/a_c_a_c/pkg/runner"
+	"github.com/notarock/a_c_a_c/pkg/twitch"
 )
 
 var COUNTDOWN = os.Getenv("COUNTDOWN")
