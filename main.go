@@ -16,7 +16,8 @@ import (
 var COUNTDOWN = os.Getenv("COUNTDOWN")
 var IGNORE_PARROTS = os.Getenv("IGNORE_PARROTS") == "true"
 var BASE_PATH = os.Getenv("BASE_PATH")
-var CHANNEL = os.Getenv("TWITCH_CHANNEL")
+var CHANNELS = strings.Split(os.Getenv("TWITCH_CHANNELS"), ",")
+var BOTS = strings.Split(os.Getenv("TWITCH_BOT_USERNAMES"), ",")
 var TWITCH_USER = os.Getenv("TWITCH_USER")
 var TWITCH_OAUTH_STRING = os.Getenv("TWITCH_OAUTH_STRING")
 var ENV = os.Getenv("ENV")
@@ -29,7 +30,7 @@ const RED = "\033[31m"
 const RESET = "\033[0m"
 
 func main() {
-	if BASE_PATH == "" || CHANNEL == "" || TWITCH_USER == "" || TWITCH_OAUTH_STRING == "" || COUNTDOWN == "" {
+	if BASE_PATH == "" || TWITCH_USER == "" || TWITCH_OAUTH_STRING == "" || COUNTDOWN == "" {
 		fmt.Println("Missing environment variables")
 		return
 	}
@@ -39,10 +40,9 @@ func main() {
 		log.Fatalf("Failed to read COUNTDOWN as int: %v", err)
 	}
 
-	channels := strings.Split(CHANNEL, ",")
 	var runners []*runner.MessageCountdownRunner
 
-	for _, channel := range channels {
+	for _, channel := range CHANNELS {
 
 		savedMessagesFilepath := fmt.Sprintf(MESSAGE_FILE_PATTERN, BASE_PATH, channel)
 		sentMessagesFilepath := fmt.Sprintf(SAVED_MESSAGES_FILE_PATTERN, BASE_PATH, channel)
@@ -70,6 +70,7 @@ func main() {
 			Username: TWITCH_USER,
 			OAuth:    TWITCH_OAUTH_STRING,
 			Channel:  channel,
+			Bots:     BOTS,
 			Sending:  ENV == "production",
 		})
 

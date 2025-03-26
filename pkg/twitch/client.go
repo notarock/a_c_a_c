@@ -7,11 +7,12 @@ import (
 )
 
 type TwitchClient struct {
-	client   *twitch.Client
-	oauth    string
-	Channel  string
-	Username string
-	Sending  bool
+	client       *twitch.Client
+	oauth        string
+	Channel      string
+	Username     string
+	Sending      bool
+	ignoredUsers []string
 }
 
 type ClientConfig struct {
@@ -19,6 +20,7 @@ type ClientConfig struct {
 	OAuth    string
 	Channel  string
 	Sending  bool
+	Bots     []string
 }
 
 func NewClient(config ClientConfig) *TwitchClient {
@@ -35,11 +37,12 @@ func NewClient(config ClientConfig) *TwitchClient {
 	fmt.Println("Joined channel", config.Channel)
 
 	return &TwitchClient{
-		client:   client,
-		oauth:    config.OAuth,
-		Channel:  config.Channel,
-		Username: config.Username,
-		Sending:  config.Sending,
+		client:       client,
+		oauth:        config.OAuth,
+		Channel:      config.Channel,
+		Username:     config.Username,
+		Sending:      config.Sending,
+		ignoredUsers: append(config.Bots, config.Username, config.Channel),
 	}
 }
 
