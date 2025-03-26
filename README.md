@@ -1,65 +1,67 @@
-# a cheap a_n_i_v clone
+# `a_c_a_c`, a cheap a_n_i_v clone
 
-A simple and lightweight Twitch chat bot that learns from chat messages and generates responses using the Markov chain algorithm, similar to BinyotBot, a_n_i_v, etc.
+A simple, lightweight Twitch chatbot that learns from chat messages and generates responses using a Markov chain algorithm—similar to BinyotBot and a_n_i_v.
 
 > [!WARNING]  
-> Before adding this bot to any channel, make sure that you have the streamer's permission. The messages this bot generates are clearly gibberish 50% of the time, and people *will* find out the user is not human sooner than you think. This *will* leads to you getting banned in most cases.
-> 
-> No, really. *Don't add this to someone's channel without their consent.*
+> Before adding this bot to any channel, **get the streamer's permission.**  
+> The bot generates gibberish about **50% of the time**, and people *will* figure out that it's not human sooner than you think.  
+> This will likely get you **banned** in most cases.  
+> **No, really—don't add this to someone's channel without their consent.**
 
-## Features
-- Reads and learns from chat messages in real-time
-- Store a chat history of messages recieved and sent
-- Generates responses based on a Markov chain model
-- Ignore messages from "parrots" i.e. people who copy the bot's messages over and over.
-- Configurable message frequency to prevent spam
-- Lightweight and easy to set up (Docker or binary provided, no database needed)
-- Is sometime funny
 
-## I want this thing on my channel. What do I do?
+## Features  
+- Reads and learns from chat messages in real-time  
+- Stores chat history of received and sent messages  
+- Generates responses using a Markov chain model  
+- Ignores parrots (users who repeatedly copy the bot’s messages)  
+- Configurable message frequency to prevent spam  
+- Lightweight and easy to set up (Docker or binary, no database needed)  
+- Sometimes generates funny responses  
 
-I am currently hosting a copy of it and I have no problem adding your twitch channel to the list of joined channel.
+## Getting Started  
 
- Ask politely. Open an issue to get in touch, or reach out in some ways or another idk.
+### Want `a_c_a_c` in your chat?  
 
-There will be an issue template for [Hosting Requests] soon :tm:  
+I'm currently hosting a copy of the bot and can add your Twitch channel upon request.  
 
-## Requirements
+- Open an issue under `[Hosting Request]` (coming soon :tm: )
+- Or reach out via email or discord if you find me.
 
-- Golang 1.22
-- A twitch user account with a oauth token
+## Requirements  
+- **Golang 1.22**  
+- **A Twitch account** with an OAuth token  
 
 ## Configuration
 
-Create a `.env` file with the following (`.env.example`):
+The bot can be configured using a `.env` file or via environment variables.
 
-```ini
-BASE_PATH="path/to/files"
-ENV="dev"  # production will enable sending messages
-
-COUNTDOWN=5 # Messages count untill next message
-TWITCH_USER="a_c_a_c"
-TWITCH_OAUTH_STRING="oauth:<token>"
-TWITCH_CHANNEL="channelone,channeltwo"
-```
-
-Alternatively, you can provision this configuration using Environment variables.
+| ENV Variable | Description | Example |
+| -------- | ------- | --- |
+| `ENV` | Environment where the software is being executed from. Anything outside of "production" will not send any real messages. | `"dev"` / `"production"` |
+| `BASE_PATH` | Path where the recieved/sent messages will be stored to. Files are stored as `channel.txt` and `channel-sent.txt`. | `"./"` |
+| `COUNTDOWN` | Number of messages to read from chat before sending a message. | `0` |
+| `IGNORE_PARROTS` | Flag to ignore users who copy the last bot's messages. Prevent learning from the bot's own gibberish. | `"true"`/`"false"` |
+| `TWITCH_USER` | Username of the account which this bot operates under. | `"a_c_a_c"` |
+| `TWITCH_OAUTH_STRING` | Your account's oauth string to authenticate with twitch chat. | `"oauth:123123123123123"` |
+| `TWITCH_CHANNEL` | Comma separated list of twitch channels to connect to. Every channel gets their own message db and as a result, their own "chat personality". | `"bozo,thelegend27"` |
 
 ## Usage
 
 ### CLI
 
-Run the bot by downloading and executing the provided binary:
+Download and run the binary from the release tab:
+
 ```sh
 ./acac
 ```
 
 ### Docker
 
-There is also a Docker image available at `ghcr.io/notarock/a_c_a_c:latest`.
-
-To make this run properly, make sure to mount the `BASE_PATH` as a volume within the container. 
-
+The bot is available as a Docker image:
+```sh
+docker run -v /your/local/path:/data -e BASE_PATH="/data" ghcr.io/notarock/a_c_a_c:latest
+```
+Make sure to mount `BASE_PATH` as a volume.
 
 ## Disclaimer
 This bot is intended for entertainment purposes. Use it responsibly and adhere to Twitch’s Terms of Service.
@@ -68,6 +70,14 @@ And again:
 
 > [!CAUTION]
 > Only use this with a streamer's consent.
+
+## Contributing
+
+Contributions are welcome! 🚀
+
+- Feature requests & bug reports → Open an issue.
+- Code contributions → Fork, create a branch, and submit a PR.
+- Want `a_c_a_c` in your chat? → Open an issue.
 
 ## License
 MIT License
