@@ -10,8 +10,10 @@ import (
 )
 
 const RED = "\033[31m"
+const BLUE = "\033[34m"
 const RESET = "\033[0m"
 const PARROT = "🦜"
+const TALKING_HEAD = "🗣️"
 
 type MessageCountdownRunner struct {
 	client    *twitch.TwitchClient
@@ -69,6 +71,7 @@ func NewMessageCountdownRunner(config MessageCountdownConfig) *MessageCountdownR
 		runner.countdown = runner.interval         // Reset countdown
 		response := runner.chain.FilteredMessage() // Generate a response
 
+		fmt.Println(TALKING_HEAD, BLUE, runner.client.Channel, ":", response, RESET)
 		runner.client.SendMessage(response)    // Send the message
 		runner.chain.SaveSentMessage(response) // Save the sent message
 	})

@@ -56,7 +56,6 @@ func (t *TwitchClient) AddMessageHook(hook func(twitch.PrivateMessage)) {
 
 func (t *TwitchClient) SendMessage(message string) {
 	if t.Sending {
-		fmt.Println("Sent to", t.Channel, ":", message)
 		t.client.Say(t.Channel, message)
 	} else {
 		fmt.Println("Not sending message to", t.Channel, ":", message)
