@@ -22,10 +22,11 @@ A simple, lightweight Twitch chatbot that learns from chat messages and generate
 
 ### Want `a_c_a_c` in your chat?  
 
-I'm currently hosting a copy of the bot and can add your Twitch channel upon request.  
+I'm currently hosting a copy of the bot and can add your Twitch channel upon request. Just gotta ask 🙂. You could:
 
-- Open an issue under `[Hosting Request]` (coming soon :tm: )
-- Or reach out via email or discord if you find me.
+- Open a issue on this repository, mentionning that it is a `[Hosting Request]`
+- Reach out via email (available on my profile).
+- Discord if you find me via a common contact.
 
 ## Requirements  
 - **Golang 1.22**  
