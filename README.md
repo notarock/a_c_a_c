@@ -2,12 +2,11 @@
 
 A simple, lightweight Twitch chatbot that learns from chat messages and generates responses using a Markov chain algorithm—similar to BinyotBot and a_n_i_v.
 
-> [!WARNING]  
-> Before adding this bot to any channel, **get the streamer's permission.**  
-> The bot generates gibberish about **50% of the time**, and people *will* figure out that it's not human sooner than you think.  
-> This will likely get you **banned** in most cases.  
-> **No, really—don't add this to someone's channel without their consent.**
-
+> [!TIP]
+> ### Want `a_c_a_c` to join your Twitch chat?
+> I'm currently hosting an instance of the bot and can add your Twitch channel upon request.
+>
+> To request `a_c_a_c` in your channel, simply open an issue using the Hosting Request template and provide the required information. Once submitted, I’ll take care of the rest and the bot should join your chat shortly after.
 
 ## Features  
 - Reads and learns from chat messages in real-time  
@@ -19,14 +18,6 @@ A simple, lightweight Twitch chatbot that learns from chat messages and generate
 - Sometimes generates funny responses  
 
 ## Getting Started  
-
-### Want `a_c_a_c` in your chat?  
-
-I'm currently hosting a copy of the bot and can add your Twitch channel upon request. Just gotta ask 🙂. You could:
-
-- Open a issue on this repository, mentionning that it is a `[Hosting Request]`
-- Reach out via email (available on my profile).
-- Discord if you find me via a common contact.
 
 ## Requirements  
 - **Golang 1.22**  
@@ -70,10 +61,13 @@ Make sure to mount `BASE_PATH` as a volume.
 ## Disclaimer
 This bot is intended for entertainment purposes. Use it responsibly and adhere to Twitch’s Terms of Service.
 
-And again:
+It learns from the chatroom. As a result, I am not responsible for whatever it says. *Everyone in chat is*
 
-> [!CAUTION]
-> Only use this with a streamer's consent.
+> [!WARNING]  
+> Before adding this bot to any channel, **get the streamer's permission.**  
+> The bot generates gibberish about **50% of the time**, and people *will* figure out that it's not human sooner than you think.  
+> This will likely get you **banned** in most cases.  
+> **No, really—don't add this to someone's channel without their consent.**
 
 ## Contributing
 
@@ -81,7 +75,7 @@ Contributions are welcome! 🚀
 
 - Feature requests & bug reports → Open an issue.
 - Code contributions → Fork, create a branch, and submit a PR.
-- Want `a_c_a_c` in your chat? → Open an issue.
+- Want `a_c_a_c` in your chat? → Use the `Hosting Request` issue template.
 
 ## License
 MIT License
