@@ -20,6 +20,10 @@ https://www.twitch.tv/mychannelhere
 
 every [1 - 99999] messages
 
+**Followers only chat?**
+
+Yes/No 
+
 **Disclaimers**
 
 - I understand notarock is not responsible for anything the bot says (It learns from *your* chat, remember)
