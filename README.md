@@ -6,7 +6,7 @@ A simple, lightweight Twitch chatbot that learns from chat messages and generate
 > ### Want `a_c_a_c` to join your Twitch chat?
 > I'm currently hosting an instance of the bot and can add your Twitch channel upon request.
 >
-> To request `a_c_a_c` in your channel, simply open an issue using the Hosting Request template and provide the required information. Once submitted, I’ll take care of the rest and the bot should join your chat shortly after.
+> To request `a_c_a_c` in your channel, simply [open an issue using the Hosting Request template](https://github.com/notarock/a_c_a_c/issues/new?template=hosting-request.md) and provide the required information. Once submitted, I’ll take care of the rest and the bot should join your chat shortly after.
 
 ## Features  
 - Reads and learns from chat messages in real-time  
@@ -75,7 +75,7 @@ Contributions are welcome! 🚀
 
 - Feature requests & bug reports → Open an issue.
 - Code contributions → Fork, create a branch, and submit a PR.
-- Want `a_c_a_c` in your chat? → Use the `Hosting Request` issue template.
+- Want `a_c_a_c` in your chat? → [Use the `Hosting Request` issue template](https://github.com/notarock/a_c_a_c/issues/new?template=hosting-request.md).
 
 ## License
 MIT License
