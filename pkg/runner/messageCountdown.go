@@ -35,7 +35,7 @@ func NewMessageCountdownRunner(config MessageCountdownConfig) *MessageCountdownR
 		interval:  config.Interval,
 		countdown: config.Interval,
 	}
-	fmt.Println("Adding message hook...")
+	fmt.Println("Adding message hook for", runner.client.Channel)
 
 	runner.client.AddMessageHook(func(message gotwitch.PrivateMessage) {
 

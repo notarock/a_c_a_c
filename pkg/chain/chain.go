@@ -58,13 +58,14 @@ func (c *Chain) AddMessage(message string) {
 func (c *Chain) LoadModel() error {
 	lines, err := ReadFile(c.savedMessagesFilepath)
 	if err != nil {
-		return fmt.Errorf("failed to load previous messages from file %s: %v:", c.savedMessagesFilepath, err)
+		return fmt.Errorf("failed to load previous messages from file %s: %v", c.savedMessagesFilepath, err)
 	}
 
 	for _, line := range lines {
 		c.chain.Add(strings.Split(line, " "))
 	}
-	fmt.Println("Loaded", len(lines), "messages...")
+
+	fmt.Println("Loaded", len(lines), "messages from", c.savedMessagesFilepath, "...")
 
 	return nil
 }
