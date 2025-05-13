@@ -18,6 +18,8 @@ jobs:
   rolling-deploy:
     needs: [release]
     uses: notarock/tuyauterie/.github/workflows/UpdateDeploymentVersion.yml@main
+    permissions:
+      contents: read
     with:
       version: ${{ needs.release.outputs.version }}
       repository: "notarock/gitops"
