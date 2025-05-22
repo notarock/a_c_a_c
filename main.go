@@ -49,7 +49,7 @@ func main() {
 
 		if ENV != "production" {
 			fmt.Println("Environment: ", ENV)
-			fmt.Println("Channel: ", GREEN, channel, RESET)
+			fmt.Println("Channel: ", GREEN, fmt.Sprintf("%+v", channel), RESET)
 			fmt.Println("Base path: ", BASE_PATH)
 			fmt.Println("Saving chat messages to: ", savedMessagesFilepath)
 			fmt.Println("Saving sent messages to: ", sentMessagesFilepath)
