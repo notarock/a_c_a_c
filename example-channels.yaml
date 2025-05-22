@@ -1,0 +1,15 @@
+bots:
+  - "nightbot"
+  - "streamerelements"
+channels:
+  - name: my_favorite_streamer
+    frequency: 200
+    allow_bits: true
+    extra_bots:
+      - "mod_helper"
+  - name: "smalltime_streamer"
+    frequency: 25
+    allow_bits: false
+    extra_bots: []
+  - name: "streamer"
+
