@@ -25,7 +25,13 @@ A simple, lightweight Twitch chatbot that learns from chat messages and generate
 
 ## Configuration
 
-The bot can be configured using a `.env` file or via environment variables.
+The bot can be configured using a `.env` file or via environment variables. 
+
+In addition, channels are managed via a configuration file to allow better customization of behaviour in different channels.
+
+### Env Variables
+
+Here's a table with all the environment variables required to run this properly:
 
 | ENV Variable | Description | Example |
 | -------- | ------- | --- |
@@ -35,10 +41,32 @@ The bot can be configured using a `.env` file or via environment variables.
 | `IGNORE_PARROTS` | Flag to ignore users who copy the last bot's messages. Prevent learning from the bot's own gibberish. | `"true"`/`"false"` |
 | `TWITCH_USER` | Username of the account which this bot operates under. | `"a_c_a_c"` |
 | `TWITCH_OAUTH_STRING` | Your account's oauth string to authenticate with twitch chat. | `"oauth:123123123123123"` |
-| `TWITCH_CHANNELS` | Comma separated list of twitch channels to connect to. Every channel gets their own message db and as a result, their own "chat personality". | `"bozo,thelegend27"` |
-| `TWITCH_BOT_USERNAMES` | Comma separated list of twitch bot in the channel. Bot users are added to the ignore list. | `"nightbot,myownbot,funtoon"` |
 | `PROHIBITED_STRINGS` | Comma separated list of strings that will not be sent by the bot. Use this to filter out links, user mentions, etc. | `"https://,twitch.tv,@"` |
 | `PROHIBITED_MESSAGES` | Comma separated list of messages that will not be sent by the bot. Use this to filter out full messages that should not be sent. | `"acac"` |
+| `CHANNEL_CONFIG` | Path to channels configuration file. See `Channel Configuration File` section bellow. | `"./channels.yaml"` |
+
+### Channel Configuration File
+
+The configuration file defines how a_c_a_c behaves across different Twitch channels. It includes a global list of bot usernames to ignore . This prevents the bot from mimicking repetitive, bot-like behavior and ensures cleaner, more human-like interactions.
+
+Each channel entry can specify its own settings, such as message frequency, whether to respond to bits, and additional bots to ignore. Any omitted settings will fall back to sensible defaults—for example, frequency defaults to the value of the COUNTDOWN environment variable, and allow_bits defaults to false.
+
+See also: [Example config file](./example-channels.yaml)
+
+```yaml
+bots:
+  - "nightbot"
+  - "streamerelements"
+
+channels:
+  - name: my_favorite_streamer
+    frequency: 200
+    allow_bits: true
+    extra_bots:
+      - "mod_helper"
+      - "my_favorite_moderation_bot"
+  - name: "streamer_two"
+```
 
 ## Usage
 
