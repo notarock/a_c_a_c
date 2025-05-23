@@ -8,7 +8,7 @@
 
 A simple, lightweight Twitch chatbot that learns from chat messages and generates responses using a Markov chain algorithm—similar to BinyotBot and a_n_i_v.
 
-If you enjoy a_c_a_c, consider leaving a ⭐ on the repository to show your support!
+If you enjoy `a_c_a_c`, consider leaving a ⭐ on the repository to show your support!
 
 > [!TIP]
 > ### Want `a_c_a_c` to join your Twitch chat?
