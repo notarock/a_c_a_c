@@ -1,6 +1,14 @@
-# `a_c_a_c`, a cheap a_n_i_v clone
+# `a_c_a_c`, a cheap a_n_i_v clone 
+
+![](https://img.shields.io/endpoint?url=https://wakapi.notarock.lol/api/compat/shields/v1/notarock/interval:any/project:a_c_a_c&label=Dev%20time&color=blue)
+![GitHub Tag](https://img.shields.io/github/v/tag/notarock/a_c_a_c)
+![GitHub contributors](https://img.shields.io/github/contributors/notarock/a_c_a_c)
+![GitHub License](https://img.shields.io/github/license/notarock/a_c_a_c)
+
 
 A simple, lightweight Twitch chatbot that learns from chat messages and generates responses using a Markov chain algorithm—similar to BinyotBot and a_n_i_v.
+
+If you enjoy a_c_a_c, consider leaving a ⭐ on the repository to show your support!
 
 > [!TIP]
 > ### Want `a_c_a_c` to join your Twitch chat?
