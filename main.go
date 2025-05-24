@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -30,6 +31,15 @@ const RED = "\033[31m"
 const RESET = "\033[0m"
 
 func main() {
+	messagesFile := flag.String("from-file", "", "A file to read messages from and spit out one generated message")
+	flag.Parse()
+
+	if *messagesFile != "" {
+		message := loadAndGenerate(*messagesFile)
+		fmt.Println(message)
+		os.Exit(0)
+	}
+
 	if BASE_PATH == "" || TWITCH_USER == "" || TWITCH_OAUTH_STRING == "" {
 		log.Panic("Missing environment variables")
 	}
@@ -90,4 +100,17 @@ func main() {
 	}
 
 	select {}
+}
+
+func loadAndGenerate(messagesFile string) string {
+	chain, err := chain.NewChain(chain.ChainConfig{
+		Saving:                false,
+		IgnoreParrots:         false,
+		SavedMessagesFilepath: messagesFile,
+	})
+	if err != nil {
+		log.Panic(err)
+	}
+
+	return chain.FilteredMessage()
 }
