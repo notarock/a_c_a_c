@@ -42,13 +42,14 @@ func (c *Chain) generateMessage() string {
  * */
 func (c *Chain) validMessage(message string) bool {
 	for _, prohibitedMessage := range c.ProhibitedMessages {
-		if message == prohibitedMessage {
+
+		if strings.EqualFold(message, prohibitedMessage) {
 			return false
 		}
 	}
 
 	for _, pattern := range c.ProhibitedStrings {
-		if strings.Contains(message, pattern) {
+		if strings.Contains(strings.ToLower(message), strings.ToLower(pattern)) {
 			return false
 		}
 	}
