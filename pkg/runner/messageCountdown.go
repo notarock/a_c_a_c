@@ -6,6 +6,7 @@ import (
 	gotwitch "github.com/gempir/go-twitch-irc/v4"
 
 	"github.com/notarock/a_c_a_c/pkg/chain"
+	"github.com/notarock/a_c_a_c/pkg/filters"
 	"github.com/notarock/a_c_a_c/pkg/twitch"
 )
 
@@ -18,6 +19,7 @@ const TALKING_HEAD = "🗣️"
 type MessageCountdownRunner struct {
 	client    *twitch.TwitchClient
 	chain     *chain.Chain
+	filters   []filters.Filter
 	interval  int
 	countdown int
 }
@@ -25,6 +27,7 @@ type MessageCountdownRunner struct {
 type MessageCountdownConfig struct {
 	Client   *twitch.TwitchClient
 	Chain    *chain.Chain
+	Filters  []filters.Filter
 	Interval int
 }
 
@@ -34,6 +37,7 @@ func NewMessageCountdownRunner(config MessageCountdownConfig) *MessageCountdownR
 		chain:     config.Chain,
 		interval:  config.Interval,
 		countdown: config.Interval,
+		filters:   config.Filters,
 	}
 	fmt.Println("Adding message hook for", runner.client.Channel)
 
@@ -68,8 +72,9 @@ func NewMessageCountdownRunner(config MessageCountdownConfig) *MessageCountdownR
 
 		// Countdown reached, send a message and reset countdown
 
-		runner.countdown = runner.interval         // Reset countdown
-		response := runner.chain.FilteredMessage() // Generate a response
+		runner.countdown = runner.interval // Reset countdown
+
+		response := runner.chain.GenerateValidMessage(runner.filters) // Generate a valid message
 
 		fmt.Println(TALKING_HEAD, BLUE, runner.client.Channel, ":", response, RESET)
 		runner.client.SendMessage(response)    // Send the message

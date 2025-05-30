@@ -10,6 +10,7 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/notarock/a_c_a_c/pkg/chain"
 	"github.com/notarock/a_c_a_c/pkg/config"
+	"github.com/notarock/a_c_a_c/pkg/filters"
 	"github.com/notarock/a_c_a_c/pkg/runner"
 	"github.com/notarock/a_c_a_c/pkg/twitch"
 )
@@ -48,6 +49,15 @@ func main() {
 
 	if err != nil {
 		log.Panic("Error loading channel config:", err)
+	}
+
+	baseFilters := []filters.Filter{
+		&filters.NaughtyWordsFilter{
+			ProhibitedWords: PROHIBITED_STRINGS,
+		},
+		&filters.MessageFilter{
+			Messages: PROHIBITED_MESSAGES,
+		},
 	}
 
 	var runners []*runner.MessageCountdownRunner
@@ -90,6 +100,7 @@ func main() {
 			Client:   client,
 			Chain:    chain,
 			Interval: channel.Frequency,
+			Filters:  baseFilters,
 		})
 
 		runners = append(runners, r)
@@ -112,5 +123,15 @@ func loadAndGenerate(messagesFile string) string {
 		log.Panic(err)
 	}
 
-	return chain.FilteredMessage()
+	fmt.Println("Prohibited strings:", PROHIBITED_STRINGS)
+	fmt.Println("Prohibited messages:", PROHIBITED_MESSAGES)
+
+	return chain.GenerateValidMessage([]filters.Filter{
+		&filters.NaughtyWordsFilter{
+			ProhibitedWords: PROHIBITED_STRINGS,
+		},
+		&filters.MessageFilter{
+			Messages: PROHIBITED_MESSAGES,
+		},
+	}) // Generate a valid message from the loaded messages
 }
