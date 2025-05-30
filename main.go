@@ -80,8 +80,6 @@ func main() {
 			IgnoreParrots:         IGNORE_PARROTS,
 			SavedMessagesFilepath: savedMessagesFilepath,
 			SentMessagesFilepath:  sentMessagesFilepath,
-			ProhibitedStrings:     PROHIBITED_STRINGS,
-			ProhibitedMessages:    PROHIBITED_MESSAGES,
 		})
 
 		if err != nil {

@@ -53,26 +53,6 @@ func (c *Chain) generateMessage() string {
 }
 
 /**
- * Validate a message against prohibited patterns
- * */
-func (c *Chain) validMessage(message string) bool {
-	for _, prohibitedMessage := range c.ProhibitedMessages {
-
-		if strings.EqualFold(message, prohibitedMessage) {
-			return false
-		}
-	}
-
-	for _, pattern := range c.ProhibitedStrings {
-		if strings.Contains(strings.ToLower(message), strings.ToLower(pattern)) {
-			return false
-		}
-	}
-
-	return true
-}
-
-/**
  * Check if a message is similar to what was just sent
  * */
 func (c *Chain) IsParrot(message string) bool {
