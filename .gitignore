@@ -3,3 +3,6 @@ model.json
 .env
 
 acac
+
+.DS_Store
+.vscode/
