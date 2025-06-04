@@ -3,3 +3,9 @@ model.json
 .env
 
 acac
+
+.DS_Store
+a_c_a_c
+messages_db/
+
+example-channels.yaml
