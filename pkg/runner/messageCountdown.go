@@ -48,6 +48,18 @@ func NewMessageCountdownRunner(config MessageCountdownConfig) *MessageCountdownR
 			return
 		}
 
+		if runner.client.IsUserModerator(message.User.Name) {
+			if message.Message == "!acac" {
+				fmt.Println("Moderator", message.User.Name, "made me speak!", runner.client.Channel)
+				response := runner.chain.FilteredMessage()
+
+				fmt.Println(TALKING_HEAD, BLUE, runner.client.Channel, ":", response, RESET)
+				runner.client.SendMessage(response)    // Send the message
+				runner.chain.SaveSentMessage(response) // Save the sent message
+				return
+			}
+		}
+
 		// Don't learn parroted messages (if enabled)
 		if runner.chain.IsParrot(message.Message) && runner.chain.IgnoreParrots {
 			fmt.Println(PARROT, RED, runner.client.Channel, ":", message.Message, RESET)
