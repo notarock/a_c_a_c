@@ -23,6 +23,8 @@ var ENV = os.Getenv("ENV")
 var PROHIBITED_STRINGS = strings.Split(os.Getenv("PROHIBITED_STRINGS"), ",")
 var PROHIBITED_MESSAGES = strings.Split(os.Getenv("PROHIBITED_MESSAGES"), ",")
 
+var GLOBAL_MODERATORS = strings.Split(os.Getenv("GLOBAL_MODERATORS"), ",")
+
 var MESSAGE_FILE_PATTERN = "%s/%s.txt"             // BASEPATH-CHANNEL.txt
 var SAVED_MESSAGES_FILE_PATTERN = "%s/%s-sent.txt" // BASEPATH-CHANNEL-sent.txt
 
@@ -79,11 +81,12 @@ func main() {
 		}
 
 		client := twitch.NewClient(twitch.ClientConfig{
-			Username: TWITCH_USER,
-			OAuth:    TWITCH_OAUTH_STRING,
-			Channel:  channel.Name,
-			Bots:     append(channelConfig.Bots, channel.ExtraBots...),
-			Sending:  ENV == "production",
+			Username:      TWITCH_USER,
+			OAuth:         TWITCH_OAUTH_STRING,
+			Channel:       channel.Name,
+			Bots:          append(channelConfig.Bots, channel.ExtraBots...),
+			Sending:       ENV == "production",
+			BotModerators: GLOBAL_MODERATORS,
 		})
 
 		r := runner.NewMessageCountdownRunner(runner.MessageCountdownConfig{
