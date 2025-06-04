@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	_ "github.com/joho/godotenv/autoload"
+	"github.com/nicklaw5/helix"
 	"github.com/notarock/a_c_a_c/pkg/chain"
 	"github.com/notarock/a_c_a_c/pkg/config"
 	"github.com/notarock/a_c_a_c/pkg/filters"
@@ -20,6 +21,9 @@ var BASE_PATH = os.Getenv("BASE_PATH")
 var TWITCH_USER = os.Getenv("TWITCH_USER")
 var TWITCH_OAUTH_STRING = os.Getenv("TWITCH_OAUTH_STRING")
 var ENV = os.Getenv("ENV")
+
+var TWITCH_API_CLIENTID = os.Getenv("TWITCH_API_CLIENTID")
+var TWITCH_API_TOKEN = os.Getenv("TWITCH_API_TOKEN")
 
 var PROHIBITED_STRINGS = strings.Split(os.Getenv("PROHIBITED_STRINGS"), ",")
 var PROHIBITED_MESSAGES = strings.Split(os.Getenv("PROHIBITED_MESSAGES"), ",")
@@ -43,6 +47,15 @@ func main() {
 
 	if BASE_PATH == "" || TWITCH_USER == "" || TWITCH_OAUTH_STRING == "" {
 		log.Panic("Missing environment variables")
+	}
+
+	twichApiClient, err := helix.NewClient(&helix.Options{
+		ClientID:        TWITCH_API_CLIENTID,
+		UserAccessToken: TWITCH_API_TOKEN,
+	})
+
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	channelConfig, err := config.LoadChannelConfig(os.Getenv("CHANNEL_CONFIG"))
@@ -96,8 +109,28 @@ func main() {
 
 		channelFilters := baseFilters
 		if !channel.AllowBits {
+			// Fetch channel ID using twitchApiClient and channel name
+			usersResp, err := twichApiClient.GetUsers(&helix.UsersParams{
+				Logins: []string{channel.Name},
+			})
+			if err != nil || usersResp.StatusCode != 200 || len(usersResp.Data.Users) == 0 {
+				log.Printf("Error fetching user ID for channel %s: %v", channel.Name, err)
+				continue
+			}
+			channelID := usersResp.Data.Users[0].ID
 
-			channelFilters = append(channelFilters, filters.NewCheerFilter([]string{"cheer", "bits", "bit", "cheering", "cheered"}))
+			resp, err := twichApiClient.GetCheermotes(&helix.CheermotesParams{
+				BroadcasterID: channelID,
+			})
+			if err != nil {
+				log.Printf("Error fetching cheermotes for channel %s: %v", channel.Name, err)
+			} else if resp.StatusCode == 200 {
+				var cheerKeywords []string
+				for _, cheermote := range resp.Data.Cheermotes {
+					cheerKeywords = append(cheerKeywords, cheermote.Prefix)
+				}
+				channelFilters = append(channelFilters, filters.NewCheerFilter(cheerKeywords))
+			}
 		}
 
 		r := runner.NewMessageCountdownRunner(runner.MessageCountdownConfig{
