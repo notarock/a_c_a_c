@@ -130,6 +130,7 @@ func main() {
 					cheerKeywords = append(cheerKeywords, cheermote.Prefix)
 				}
 				channelFilters = append(channelFilters, filters.NewCheerFilter(cheerKeywords))
+				fmt.Println("Added cheer filter for channel", channel.Name, "with keywords:", cheerKeywords)
 			}
 		}
 

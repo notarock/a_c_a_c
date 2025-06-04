@@ -1,6 +1,7 @@
 package filters
 
 import (
+	"fmt"
 	"regexp"
 	"strings"
 )
@@ -21,5 +22,9 @@ func buildCheermoteRegex(cheermotes []string) *regexp.Regexp {
 }
 
 func (cf *CheerFilter) Filter(message string) bool {
-	return cf.cheermoteRegexp.MatchString(message)
+	if cf.cheermoteRegexp.MatchString(message) {
+		fmt.Println("CheerFilter matched:", message)
+		return true
+	}
+	return false
 }
