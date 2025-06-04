@@ -94,11 +94,17 @@ func main() {
 			Sending:  ENV == "production",
 		})
 
+		channelFilters := baseFilters
+		if !channel.AllowBits {
+
+			channelFilters = append(channelFilters, filters.NewCheerFilter([]string{"cheer", "bits", "bit", "cheering", "cheered"}))
+		}
+
 		r := runner.NewMessageCountdownRunner(runner.MessageCountdownConfig{
 			Client:   client,
 			Chain:    chain,
 			Interval: channel.Frequency,
-			Filters:  baseFilters,
+			Filters:  channelFilters,
 		})
 
 		runners = append(runners, r)
