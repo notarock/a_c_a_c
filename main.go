@@ -8,8 +8,10 @@ import (
 	"strings"
 
 	_ "github.com/joho/godotenv/autoload"
+	"github.com/nicklaw5/helix"
 	"github.com/notarock/a_c_a_c/pkg/chain"
 	"github.com/notarock/a_c_a_c/pkg/config"
+	"github.com/notarock/a_c_a_c/pkg/filters"
 	"github.com/notarock/a_c_a_c/pkg/runner"
 	"github.com/notarock/a_c_a_c/pkg/twitch"
 )
@@ -19,6 +21,9 @@ var BASE_PATH = os.Getenv("BASE_PATH")
 var TWITCH_USER = os.Getenv("TWITCH_USER")
 var TWITCH_OAUTH_STRING = os.Getenv("TWITCH_OAUTH_STRING")
 var ENV = os.Getenv("ENV")
+
+var TWITCH_API_CLIENTID = os.Getenv("TWITCH_API_CLIENTID")
+var TWITCH_API_TOKEN = os.Getenv("TWITCH_API_TOKEN")
 
 var PROHIBITED_STRINGS = strings.Split(os.Getenv("PROHIBITED_STRINGS"), ",")
 var PROHIBITED_MESSAGES = strings.Split(os.Getenv("PROHIBITED_MESSAGES"), ",")
@@ -46,10 +51,28 @@ func main() {
 		log.Panic("Missing environment variables")
 	}
 
+	twitchApiClient, err := helix.NewClient(&helix.Options{
+		ClientID:        TWITCH_API_CLIENTID,
+		UserAccessToken: TWITCH_API_TOKEN,
+	})
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	channelConfig, err := config.LoadChannelConfig(os.Getenv("CHANNEL_CONFIG"))
 
 	if err != nil {
 		log.Panic("Error loading channel config:", err)
+	}
+
+	baseFilters := []filters.Filter{
+		&filters.NaughtyWordsFilter{
+			ProhibitedWords: PROHIBITED_STRINGS,
+		},
+		&filters.MessageFilter{
+			Messages: PROHIBITED_MESSAGES,
+		},
 	}
 
 	var runners []*runner.MessageCountdownRunner
@@ -72,8 +95,6 @@ func main() {
 			IgnoreParrots:         IGNORE_PARROTS,
 			SavedMessagesFilepath: savedMessagesFilepath,
 			SentMessagesFilepath:  sentMessagesFilepath,
-			ProhibitedStrings:     PROHIBITED_STRINGS,
-			ProhibitedMessages:    PROHIBITED_MESSAGES,
 		})
 
 		if err != nil {
@@ -89,10 +110,20 @@ func main() {
 			BotModerators: GLOBAL_MODERATORS,
 		})
 
+		channelFilters := baseFilters
+		if !channel.AllowBits {
+			cheerFilter, err := filters.NewCheerFilter(twitchApiClient, channel.Name)
+			if err != nil {
+				log.Fatal(err)
+			}
+			channelFilters = append(channelFilters, cheerFilter)
+		}
+
 		r := runner.NewMessageCountdownRunner(runner.MessageCountdownConfig{
 			Client:   client,
 			Chain:    chain,
 			Interval: channel.Frequency,
+			Filters:  channelFilters,
 		})
 
 		runners = append(runners, r)
@@ -115,5 +146,17 @@ func loadAndGenerate(messagesFile string) string {
 		log.Panic(err)
 	}
 
-	return chain.FilteredMessage()
+	if ENV != "production" {
+		fmt.Println("Prohibited strings:", PROHIBITED_STRINGS)
+		fmt.Println("Prohibited messages:", PROHIBITED_MESSAGES)
+	}
+
+	return chain.GenerateValidMessage([]filters.Filter{
+		&filters.NaughtyWordsFilter{
+			ProhibitedWords: PROHIBITED_STRINGS,
+		},
+		&filters.MessageFilter{
+			Messages: PROHIBITED_MESSAGES,
+		},
+	}) // Generate a valid message from the loaded messages
 }

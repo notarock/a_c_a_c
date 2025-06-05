@@ -5,6 +5,7 @@ model.json
 acac
 
 .DS_Store
+.vscode/
 a_c_a_c
 messages_db/
 
