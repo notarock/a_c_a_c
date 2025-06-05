@@ -146,8 +146,10 @@ func loadAndGenerate(messagesFile string) string {
 		log.Panic(err)
 	}
 
-	fmt.Println("Prohibited strings:", PROHIBITED_STRINGS)
-	fmt.Println("Prohibited messages:", PROHIBITED_MESSAGES)
+	if ENV != "production" {
+		fmt.Println("Prohibited strings:", PROHIBITED_STRINGS)
+		fmt.Println("Prohibited messages:", PROHIBITED_MESSAGES)
+	}
 
 	return chain.GenerateValidMessage([]filters.Filter{
 		&filters.NaughtyWordsFilter{
