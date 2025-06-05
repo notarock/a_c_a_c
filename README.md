@@ -4,6 +4,7 @@
 ![GitHub Tag](https://img.shields.io/github/v/tag/notarock/a_c_a_c)
 ![GitHub contributors](https://img.shields.io/github/contributors/notarock/a_c_a_c)
 ![GitHub License](https://img.shields.io/github/license/notarock/a_c_a_c)
+[![Tuyauterie](https://github.com/notarock/a_c_a_c/actions/workflows/main.yml/badge.svg)](https://github.com/notarock/a_c_a_c/actions/workflows/main.yml)
 
 
 A simple, lightweight Twitch chatbot that learns from chat messages and generates responses using a Markov chain algorithm—similar to BinyotBot and a_n_i_v.
