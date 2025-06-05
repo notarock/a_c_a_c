@@ -4,16 +4,38 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+
+	"github.com/nicklaw5/helix"
 )
 
 type CheerFilter struct {
-	cheermoteRegexp regexp.Regexp
+	cheermoteRegexp *regexp.Regexp
 }
 
-func NewCheerFilter(cheermotes []string) *CheerFilter {
-	return &CheerFilter{
-		cheermoteRegexp: *buildCheermoteRegex(cheermotes),
+func NewCheerFilter(twitchApiClient *helix.Client, channelName string) (cf *CheerFilter, err error) {
+	// Fetch channel ID using twitchApiClient and channel name
+	usersResp, err := twitchApiClient.GetUsers(&helix.UsersParams{
+		Logins: []string{channelName},
+	})
+	if err != nil || usersResp.StatusCode != 200 || len(usersResp.Data.Users) == 0 {
+		return cf, fmt.Errorf("failed to fetch user ID for channel %s: %v", channelName, err)
 	}
+	channelID := usersResp.Data.Users[0].ID
+
+	resp, err := twitchApiClient.GetCheermotes(&helix.CheermotesParams{
+		BroadcasterID: channelID,
+	})
+
+	if err != nil {
+		return cf, fmt.Errorf("failed to fetch cheermotes for channel %s: %v", channelName, err)
+	} else if resp.StatusCode != 200 {
+		return cf, fmt.Errorf("failed to fetch cheermotes for channel %s: http response code was %d", channelName, resp.StatusCode)
+	}
+	var cheerKeywords []string
+	for _, cheermote := range resp.Data.Cheermotes {
+		cheerKeywords = append(cheerKeywords, cheermote.Prefix)
+	}
+	return &CheerFilter{cheermoteRegexp: buildCheermoteRegex(cheerKeywords)}, nil
 }
 
 func buildCheermoteRegex(cheermotes []string) *regexp.Regexp {

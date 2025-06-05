@@ -49,7 +49,7 @@ func main() {
 		log.Panic("Missing environment variables")
 	}
 
-	twichApiClient, err := helix.NewClient(&helix.Options{
+	twitchApiClient, err := helix.NewClient(&helix.Options{
 		ClientID:        TWITCH_API_CLIENTID,
 		UserAccessToken: TWITCH_API_TOKEN,
 	})
@@ -109,29 +109,11 @@ func main() {
 
 		channelFilters := baseFilters
 		if !channel.AllowBits {
-			// Fetch channel ID using twitchApiClient and channel name
-			usersResp, err := twichApiClient.GetUsers(&helix.UsersParams{
-				Logins: []string{channel.Name},
-			})
-			if err != nil || usersResp.StatusCode != 200 || len(usersResp.Data.Users) == 0 {
-				log.Printf("Error fetching user ID for channel %s: %v", channel.Name, err)
-				continue
-			}
-			channelID := usersResp.Data.Users[0].ID
-
-			resp, err := twichApiClient.GetCheermotes(&helix.CheermotesParams{
-				BroadcasterID: channelID,
-			})
+			cheerFilter, err := filters.NewCheerFilter(twitchApiClient, channel.Name)
 			if err != nil {
-				log.Printf("Error fetching cheermotes for channel %s: %v", channel.Name, err)
-			} else if resp.StatusCode == 200 {
-				var cheerKeywords []string
-				for _, cheermote := range resp.Data.Cheermotes {
-					cheerKeywords = append(cheerKeywords, cheermote.Prefix)
-				}
-				channelFilters = append(channelFilters, filters.NewCheerFilter(cheerKeywords))
-				fmt.Println("Added cheer filter for channel", channel.Name, "with keywords:", cheerKeywords)
+				log.Fatal(err)
 			}
+			channelFilters = append(channelFilters, cheerFilter)
 		}
 
 		r := runner.NewMessageCountdownRunner(runner.MessageCountdownConfig{
