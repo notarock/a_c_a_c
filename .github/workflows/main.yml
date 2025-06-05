@@ -6,6 +6,12 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '42 12 22 * *' # At 12:42 on the 22nd of every month
+
+permissions:
+  packages: write
+  contents: read
+  id-token: write
+
 jobs:
   main:
     uses: notarock/tuyauterie/.github/workflows/tuyauterie.yml@main
