@@ -51,7 +51,7 @@ func NewMessageCountdownRunner(config MessageCountdownConfig) *MessageCountdownR
 		if runner.client.IsUserModerator(message.User.Name) {
 			if message.Message == "!acac" {
 				fmt.Println("Moderator", message.User.Name, "made me speak!", runner.client.Channel)
-				response := runner.chain.FilteredMessage()
+				response := runner.chain.GenerateValidMessage(runner.filters) // Generate a valid message
 
 				fmt.Println(TALKING_HEAD, BLUE, runner.client.Channel, ":", response, RESET)
 				runner.client.SendMessage(response)    // Send the message
