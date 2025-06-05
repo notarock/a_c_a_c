@@ -35,6 +35,9 @@ func NewCheerFilter(twitchApiClient *helix.Client, channelName string) (cf *Chee
 	for _, cheermote := range resp.Data.Cheermotes {
 		cheerKeywords = append(cheerKeywords, cheermote.Prefix)
 	}
+
+	fmt.Println("Cheer filters for", channelName, ":", cheerKeywords)
+
 	return &CheerFilter{cheermoteRegexp: buildCheermoteRegex(cheerKeywords)}, nil
 }
 
