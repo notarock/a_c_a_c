@@ -5,7 +5,7 @@ on:
   release:
   workflow_dispatch:
   schedule:
-    - cron: '42 12 20 * *' # At 12:42 on the 22nd of every month
+    - cron: '30 10 * * 2' # At 10:30 on monday's
 
 permissions:
   packages: write
