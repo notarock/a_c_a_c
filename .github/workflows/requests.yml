@@ -1,0 +1,91 @@
+name: Append Channel to channels config (in gitops)
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  extract-from-comment:
+    if: github.event.comment.user.login == 'notarock'
+    runs-on: ubuntu-latest
+    outputs:
+      channel-yaml: ${{ steps.extract.outputs.channel-yaml }}
+    steps:
+      - name: Print issue URL
+        run: |
+          echo "Issue URL: ${{ github.event.issue.html_url }}"
+
+      - name: Extract YAML from comment
+        id: extract
+        run: |
+          COMMENT=$(cat << 'EOF'
+          ${{ github.event.comment.body }}
+          EOF
+          )
+
+          YAML=$(echo "$COMMENT" | awk '/```(yaml|yml)/ {flag=1; next} /```/ {flag=0} flag')
+          
+          if [ -z "$YAML" ]; then
+            echo "No YAML block found."
+            exit 0
+          fi
+          
+          {
+            echo "channel-yaml<<EOF"
+            echo "$YAML"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Write summary
+        if: steps.extract.outputs.channel-yaml != ''
+        run: |
+          echo "[ACAC hosting request](${{ github.event.issue.html_url }})" >> $GITHUB_STEP_SUMMARY
+          echo "Extracted YAML from comment:" >> $GITHUB_STEP_SUMMARY
+          echo '```yaml' >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.extract.outputs.channel-yaml }}" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+  update-channels:
+    needs: extract-from-comment
+    runs-on: ubuntu-latest
+    if: needs.extract-from-comment.outputs.channel-yaml != ''
+    steps:
+      - name: Checkout GitOps repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          token: ${{ secrets.GITOPS_TOKEN }}
+          repository: 'notarock/gitops'
+
+      - name: Create local new_channel file
+        id: update
+        run: |
+          COMMENT=$(cat << 'EOF'
+          ${{ needs.extract-from-comment.outputs.channel-yaml }}
+          EOF
+          )
+
+          echo "$COMMENT" > new_channel.yaml
+          cat new_channel.yaml
+
+      - name: Append the new channel to acac/channels.yaml
+        run: |
+          yq -i '.channels += [load("new_channel.yaml")]' acac/channels.yaml
+          
+      - name: Show git diff
+        run: | 
+          git diff --unified=0
+
+          echo "Git diff to commit to gitops repo:" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "$(git diff --unified=0)" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Commit & Push changes
+        uses: actions-js/push@master
+        with:
+          coauthor_name: ${{ github.actor }}
+          github_token: ${{ secrets.GITOPS_TOKEN }}
+          repository: 'notarock/gitops'
+          message: "ACAC hosting request: ${{ github.event.issue.html_url }}"
