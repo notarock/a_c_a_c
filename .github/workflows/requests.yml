@@ -4,6 +4,10 @@ on:
   issue_comment:
     types: [created]
 
+
+permissions:
+  issues: write
+
 jobs:
   extract-from-comment:
     if: github.event.comment.user.login == 'notarock'
@@ -89,3 +93,16 @@ jobs:
           github_token: ${{ secrets.GITOPS_TOKEN }}
           repository: 'notarock/gitops'
           message: "ACAC hosting request: ${{ github.event.issue.html_url }}"
+
+  close-issue:
+    needs: [extract-from-comment, update-channels]
+    runs-on: ubuntu-latest
+    if: needs.extract-from-comment.outputs.channel-yaml != ''
+    steps:
+      - name: Close Issue
+        uses: peter-evans/close-issue@v3
+        with:
+          labels: request-completed 
+          comment: |
+            Channel has been added to the configuration file. Thank you for your request!
+            If anything is wrong or you have any questions, feel free to reopen this issue or create a new one.
