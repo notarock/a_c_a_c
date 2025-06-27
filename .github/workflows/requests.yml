@@ -76,6 +76,7 @@ jobs:
       - name: Append the new channel to acac/channels.yaml
         run: |
           yq -i '.channels += [load("new_channel.yaml")]' acac/channels.yaml
+          rm new_channel.yaml
           
       - name: Show git diff
         run: | 
