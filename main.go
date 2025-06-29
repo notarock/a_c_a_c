@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"strings"
+	"time"
 
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/nicklaw5/helix"
@@ -131,6 +132,7 @@ func main() {
 
 	for _, runner := range runners {
 		go runner.Run()
+		time.Sleep(500 * time.Millisecond) // Give some time for the runners to start
 	}
 
 	select {}
