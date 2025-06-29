@@ -80,8 +80,10 @@ func main() {
 
 	for _, channel := range channelConfig.Channels {
 
-		savedMessagesFilepath := fmt.Sprintf(MESSAGE_FILE_PATTERN, BASE_PATH, channel.Name)
-		sentMessagesFilepath := fmt.Sprintf(SAVED_MESSAGES_FILE_PATTERN, BASE_PATH, channel.Name)
+		channelName := strings.ToLower(channel.Name)
+
+		savedMessagesFilepath := fmt.Sprintf(MESSAGE_FILE_PATTERN, BASE_PATH, channelName)
+		sentMessagesFilepath := fmt.Sprintf(SAVED_MESSAGES_FILE_PATTERN, BASE_PATH, channelName)
 
 		if ENV != "production" {
 			fmt.Println("Environment: ", ENV)
@@ -105,7 +107,7 @@ func main() {
 		client := twitch.NewClient(twitch.ClientConfig{
 			Username:      TWITCH_USER,
 			OAuth:         TWITCH_OAUTH_STRING,
-			Channel:       channel.Name,
+			Channel:       channelName,
 			Bots:          append(channelConfig.Bots, channel.ExtraBots...),
 			Sending:       ENV == "production",
 			BotModerators: GLOBAL_MODERATORS,
@@ -113,7 +115,7 @@ func main() {
 
 		channelFilters := baseFilters
 		if !channel.AllowBits {
-			cheerFilter, err := filters.NewCheerFilter(twitchApiClient, channel.Name)
+			cheerFilter, err := filters.NewCheerFilter(twitchApiClient, channelName)
 			if err != nil {
 				log.Fatal(err)
 			}
