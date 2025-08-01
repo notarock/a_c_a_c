@@ -132,6 +132,8 @@ func main() {
 		runners = append(runners, r)
 	}
 
+	fmt.Println("Starting runners... Currently", len(runners), "channels configured.")
+
 	for _, runner := range runners {
 		go runner.Run()
 		time.Sleep(1 * time.Second) // Rate limit the startup (max 20 per 10 seconds)
