@@ -134,7 +134,7 @@ func main() {
 
 	for _, runner := range runners {
 		go runner.Run()
-		time.Sleep(500 * time.Millisecond) // Give some time for the runners to start
+		time.Sleep(1 * time.Second) // Rate limit the startup (max 20 per 10 seconds)
 	}
 
 	select {}

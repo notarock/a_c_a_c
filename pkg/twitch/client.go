@@ -35,8 +35,11 @@ func NewClient(config ClientConfig) *TwitchClient {
 		client = twitch.NewAnonymousClient()
 	}
 
+	client.OnConnect(func() {
+		fmt.Println("Connected to Twitch as", config.Username, "in channel", config.Channel)
+	})
+
 	client.Join(config.Channel)
-	fmt.Println("Joined channel", config.Channel)
 
 	return &TwitchClient{
 		client:         client,
