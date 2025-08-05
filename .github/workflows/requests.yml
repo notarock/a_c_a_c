@@ -105,5 +105,8 @@ jobs:
         with:
           labels: request-completed 
           comment: |
-            Channel has been added to the configuration file. Thank you for your request!
-            If anything is wrong or you have any questions, feel free to reopen this issue or create a new one.
+            The channel has been added to the configuration file successfully.
+            
+            acac should join your channel soon! To check if acac is here, you can use the `!acac` command. When used by the channel owner, it forces the bot to send a message. Make sure to send at least one message prior to using the command so acac has something to learn from.           
+            
+            If you have any questions or problems with acac, feel free to reopen this issue or create a new one. Enjoy!
