@@ -16,7 +16,7 @@ https://www.twitch.tv/mychannelhere
 - famousbot
 - myown_bot
 
-**How often should a_c_a_c send a message? (Defaults to 100, min 25)**
+**How often should a_c_a_c send a message? (Defaults to 100, min 35)**
 
 Once every __100__ messages
 
