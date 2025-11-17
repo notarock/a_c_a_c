@@ -9,7 +9,6 @@ import (
 	"time"
 
 	_ "github.com/joho/godotenv/autoload"
-	"github.com/nicklaw5/helix"
 	"github.com/notarock/a_c_a_c/pkg/chain"
 	"github.com/notarock/a_c_a_c/pkg/config"
 	"github.com/notarock/a_c_a_c/pkg/filters"
@@ -52,14 +51,14 @@ func main() {
 		log.Panic("Missing environment variables")
 	}
 
-	twitchApiClient, err := helix.NewClient(&helix.Options{
-		ClientID:        TWITCH_API_CLIENTID,
-		UserAccessToken: TWITCH_API_TOKEN,
-	})
+	// twitchApiClient, err := helix.NewClient(&helix.Options{
+	// 	ClientID:        TWITCH_API_CLIENTID,
+	// 	UserAccessToken: TWITCH_API_TOKEN,
+	// })
 
-	if err != nil {
-		log.Fatal(err)
-	}
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 
 	channelConfig, err := config.LoadChannelConfig(os.Getenv("CHANNEL_CONFIG"))
 
@@ -114,13 +113,15 @@ func main() {
 		})
 
 		channelFilters := baseFilters
-		if !channel.AllowBits {
-			cheerFilter, err := filters.NewCheerFilter(twitchApiClient, channelName)
-			if err != nil {
-				log.Fatal(err)
+		/*
+			if !channel.AllowBits {
+				cheerFilter, err := filters.NewCheerFilter(twitchApiClient, channelName)
+				if err != nil {
+					log.Fatal(err)
+				}
+				channelFilters = append(channelFilters, cheerFilter)
 			}
-			channelFilters = append(channelFilters, cheerFilter)
-		}
+		*/
 
 		r := runner.NewMessageCountdownRunner(runner.MessageCountdownConfig{
 			Client:   client,
