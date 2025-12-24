@@ -53,6 +53,8 @@ jobs:
     needs: extract-from-comment
     runs-on: ubuntu-latest
     if: needs.extract-from-comment.outputs.channel-yaml != ''
+    outputs:
+      update-type: ${{ steps.yq.outputs.type }}
     steps:
       - name: Checkout GitOps repository
         uses: actions/checkout@v4
@@ -63,7 +65,6 @@ jobs:
           repository: 'notarock/gitops'
 
       - name: Create local new_channel file
-        id: update
         run: |
           COMMENT=$(cat << 'EOF'
           ${{ needs.extract-from-comment.outputs.channel-yaml }}
@@ -73,9 +74,24 @@ jobs:
           echo "$COMMENT" > new_channel.yaml
           cat new_channel.yaml
 
-      - name: Append the new channel to acac/channels.yaml
+      - name: Append or update channel in acac/channels.yaml
+        id: yq
         run: |
-          yq -i '.channels += [load("new_channel.yaml")]' acac/channels.yaml
+          CHANNEL_NAME=$(yq '.name' new_channel.yaml)
+          
+          # Check if channel with this name already exists
+          if yq -e ".channels[] | select(.name == \"$CHANNEL_NAME\")" acac/channels.yaml > /dev/null 2>&1; then
+            # Update existing channel
+            yq -i "(.channels[] | select(.name == \"$CHANNEL_NAME\")) = load(\"new_channel.yaml\")" acac/channels.yaml
+            echo "Updated existing channel: $CHANNEL_NAME"
+            echo "type=update" >> $GITHUB_OUTPUT
+          else
+            # Append new channel
+            yq -i '.channels += [load("new_channel.yaml")]' acac/channels.yaml
+            echo "Added new channel: $CHANNEL_NAME"
+            echo "type=new" >> $GITHUB_OUTPUT
+          fi
+          
           rm new_channel.yaml
           
       - name: Show git diff
@@ -100,7 +116,8 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.extract-from-comment.outputs.channel-yaml != ''
     steps:
-      - name: Close Issue
+      - name: Close Issue for new channel
+        if: needs.update-channels.outputs.update-type == 'new'
         uses: peter-evans/close-issue@v3
         with:
           labels: request-completed 
@@ -110,3 +127,13 @@ jobs:
             acac should join your channel soon! To check if acac is here, you can use the '!acac' command. When used by the channel owner, it forces the bot to send a message. Make sure to send at least one message prior to using the command so acac has something to learn from.           
             
             If you have any questions or problems with acac, feel free to reopen this issue or create a new one. Enjoy!
+
+      - name: Close Issue for update to channel
+        if: needs.update-channels.outputs.update-type == 'update'
+        uses: peter-evans/close-issue@v3
+        with:
+          labels: request-completed 
+          comment: |
+            The channel configuration has been updated successfully.
+            
+            The changes should take effect soon. If you have any questions or problems with acac, feel free to reopen this issue or create a new one.
