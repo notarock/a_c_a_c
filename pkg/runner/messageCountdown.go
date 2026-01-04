@@ -55,7 +55,7 @@ func NewMessageCountdownRunner(config MessageCountdownConfig) *MessageCountdownR
 				response := runner.chain.GenerateValidMessage(runner.filters) // Generate a valid message
 
 				fmt.Println(TALKING_HEAD, BLUE, runner.client.Channel, ":", response, RESET)
-				runner.delayAndSend(response)          // Send the message with delay
+				runner.client.SendMessage(response)    // Send the message
 				runner.chain.SaveSentMessage(response) // Save the sent message
 				return
 			}
