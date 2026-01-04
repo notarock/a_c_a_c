@@ -2,6 +2,7 @@ package runner
 
 import (
 	"fmt"
+	"time"
 
 	gotwitch "github.com/gempir/go-twitch-irc/v4"
 
@@ -54,7 +55,7 @@ func NewMessageCountdownRunner(config MessageCountdownConfig) *MessageCountdownR
 				response := runner.chain.GenerateValidMessage(runner.filters) // Generate a valid message
 
 				fmt.Println(TALKING_HEAD, BLUE, runner.client.Channel, ":", response, RESET)
-				runner.client.SendMessage(response)    // Send the message
+				runner.delayAndSend(response)          // Send the message with delay
 				runner.chain.SaveSentMessage(response) // Save the sent message
 				return
 			}
@@ -89,11 +90,19 @@ func NewMessageCountdownRunner(config MessageCountdownConfig) *MessageCountdownR
 		response := runner.chain.GenerateValidMessage(runner.filters) // Generate a valid message
 
 		fmt.Println(TALKING_HEAD, BLUE, runner.client.Channel, ":", response, RESET)
-		runner.client.SendMessage(response)    // Send the message
+		runner.delayAndSend(response)          // Send the message with delay
 		runner.chain.SaveSentMessage(response) // Save the sent message
 	})
 
 	return &runner
+}
+
+func (m *MessageCountdownRunner) delayAndSend(message string) {
+	delay := m.client.GetResponseDelay()
+	if delay > 0 {
+		time.Sleep(time.Duration(delay) * time.Second)
+	}
+	m.client.SendMessage(message)
 }
 
 func (m *MessageCountdownRunner) Run() error {

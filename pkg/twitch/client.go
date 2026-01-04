@@ -65,12 +65,13 @@ func (t *TwitchClient) AddMessageHook(hook func(twitch.PrivateMessage)) {
 }
 
 func (t *TwitchClient) SendMessage(message string) {
-	if t.ResponseDelaySeconds > 0 {
-		time.Sleep(time.Duration(t.ResponseDelaySeconds) * time.Second)
-	}
 	if t.Sending {
 		t.client.Say(t.Channel, message)
 	} else {
 		fmt.Println("Not sending message to", t.Channel, ":", message)
 	}
+}
+
+func (t *TwitchClient) GetResponseDelay() int {
+	return t.ResponseDelaySeconds
 }
