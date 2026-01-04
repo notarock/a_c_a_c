@@ -2,27 +2,30 @@ package twitch
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/gempir/go-twitch-irc/v4"
 )
 
 type TwitchClient struct {
-	client         *twitch.Client
-	oauth          string
-	Channel        string
-	Username       string
-	Sending        bool
-	ignoredUsers   []string
-	moderatorUsers []string
+	client               *twitch.Client
+	oauth                string
+	Channel              string
+	Username             string
+	Sending              bool
+	ignoredUsers         []string
+	moderatorUsers       []string
+	ResponseDelaySeconds int
 }
 
 type ClientConfig struct {
-	Username      string
-	OAuth         string
-	Channel       string
-	Sending       bool
-	Bots          []string
-	BotModerators []string
+	Username             string
+	OAuth                string
+	Channel              string
+	Sending              bool
+	Bots                 []string
+	BotModerators        []string
+	ResponseDelaySeconds int
 }
 
 func NewClient(config ClientConfig) *TwitchClient {
@@ -42,13 +45,14 @@ func NewClient(config ClientConfig) *TwitchClient {
 	client.Join(config.Channel)
 
 	return &TwitchClient{
-		client:         client,
-		oauth:          config.OAuth,
-		Channel:        config.Channel,
-		Username:       config.Username,
-		Sending:        config.Sending,
-		ignoredUsers:   append(config.Bots, config.Username, config.Channel),
-		moderatorUsers: config.BotModerators,
+		client:               client,
+		oauth:                config.OAuth,
+		Channel:              config.Channel,
+		Username:             config.Username,
+		Sending:              config.Sending,
+		ignoredUsers:         append(config.Bots, config.Username, config.Channel),
+		moderatorUsers:       config.BotModerators,
+		ResponseDelaySeconds: config.ResponseDelaySeconds,
 	}
 }
 
@@ -61,6 +65,9 @@ func (t *TwitchClient) AddMessageHook(hook func(twitch.PrivateMessage)) {
 }
 
 func (t *TwitchClient) SendMessage(message string) {
+	if t.ResponseDelaySeconds > 0 {
+		time.Sleep(time.Duration(t.ResponseDelaySeconds) * time.Second)
+	}
 	if t.Sending {
 		t.client.Say(t.Channel, message)
 	} else {

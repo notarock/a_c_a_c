@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -21,6 +22,7 @@ var BASE_PATH = os.Getenv("BASE_PATH")
 var TWITCH_USER = os.Getenv("TWITCH_USER")
 var TWITCH_OAUTH_STRING = os.Getenv("TWITCH_OAUTH_STRING")
 var ENV = os.Getenv("ENV")
+var RESPONSE_DELAY_SECONDS = getResponseDelay()
 
 var TWITCH_API_CLIENTID = os.Getenv("TWITCH_API_CLIENTID")
 var TWITCH_API_TOKEN = os.Getenv("TWITCH_API_TOKEN")
@@ -36,6 +38,23 @@ var SAVED_MESSAGES_FILE_PATTERN = "%s/%s-sent.txt" // BASEPATH-CHANNEL-sent.txt
 const GREEN = "\033[32m"
 const RED = "\033[31m"
 const RESET = "\033[0m"
+
+func getResponseDelay() int {
+	delayStr := os.Getenv("RESPONSE_DELAY_SECONDS")
+	if delayStr == "" {
+		return 0
+	}
+	delay, err := strconv.Atoi(delayStr)
+	if err != nil {
+		log.Printf("Invalid RESPONSE_DELAY_SECONDS value '%s', using default 0: %v", delayStr, err)
+		return 0
+	}
+	if delay < 0 {
+		log.Printf("RESPONSE_DELAY_SECONDS must be non-negative, using default 0")
+		return 0
+	}
+	return delay
+}
 
 func main() {
 	messagesFile := flag.String("from-file", "", "A file to read messages from and spit out one generated message")
@@ -104,12 +123,13 @@ func main() {
 		}
 
 		client := twitch.NewClient(twitch.ClientConfig{
-			Username:      TWITCH_USER,
-			OAuth:         TWITCH_OAUTH_STRING,
-			Channel:       channelName,
-			Bots:          append(channelConfig.Bots, channel.ExtraBots...),
-			Sending:       ENV == "production",
-			BotModerators: GLOBAL_MODERATORS,
+			Username:             TWITCH_USER,
+			OAuth:                TWITCH_OAUTH_STRING,
+			Channel:              channelName,
+			Bots:                 append(channelConfig.Bots, channel.ExtraBots...),
+			Sending:              ENV == "production",
+			BotModerators:        GLOBAL_MODERATORS,
+			ResponseDelaySeconds: RESPONSE_DELAY_SECONDS,
 		})
 
 		channelFilters := baseFilters
