@@ -2,7 +2,6 @@ package twitch
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/gempir/go-twitch-irc/v4"
 )
