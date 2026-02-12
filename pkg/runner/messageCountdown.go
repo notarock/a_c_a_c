@@ -49,7 +49,8 @@ func NewMessageCountdownRunner(config MessageCountdownConfig) *MessageCountdownR
 			return
 		}
 
-		if runner.client.IsUserModerator(message.User.Name) || message.User.Name == runner.client.Channel {
+		// Check if moderator (including channel owner) used !acac command
+		if runner.client.IsUserModerator(message.User.Name) {
 			if message.Message == "!acac" {
 				fmt.Println("Moderator", message.User.Name, "made me speak!", runner.client.Channel)
 				response := runner.chain.GenerateValidMessage(runner.filters) // Generate a valid message

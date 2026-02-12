@@ -2,6 +2,7 @@ package twitch
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/gempir/go-twitch-irc/v4"
 )
@@ -43,14 +44,27 @@ func NewClient(config ClientConfig) *TwitchClient {
 
 	client.Join(config.Channel)
 
+	// Add channel owner to the list of moderators
+	moderators := append(config.BotModerators, strings.ToLower(config.Channel))
+
+	// Normalize all usernames to lowercase
+	for i := range moderators {
+		moderators[i] = strings.ToLower(moderators[i])
+	}
+
+	ignoredUsers := append(config.Bots, config.Username, config.Channel)
+	for i := range ignoredUsers {
+		ignoredUsers[i] = strings.ToLower(ignoredUsers[i])
+	}
+
 	return &TwitchClient{
 		client:               client,
 		oauth:                config.OAuth,
 		Channel:              config.Channel,
 		Username:             config.Username,
 		Sending:              config.Sending,
-		ignoredUsers:         append(config.Bots, config.Username, config.Channel),
-		moderatorUsers:       config.BotModerators,
+		ignoredUsers:         ignoredUsers,
+		moderatorUsers:       moderators,
 		ResponseDelaySeconds: config.ResponseDelaySeconds,
 	}
 }
