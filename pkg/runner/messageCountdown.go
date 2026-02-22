@@ -44,22 +44,24 @@ func NewMessageCountdownRunner(config MessageCountdownConfig) *MessageCountdownR
 
 	runner.client.AddMessageHook(func(message gotwitch.PrivateMessage) {
 
-		// Don't learn messages from ignored users (bots)
-		if runner.client.IsUserIgnored(message.User.Name) {
-			return
-		}
-
 		// Check if moderator (including channel owner) used !acac command
+		// This check happens before ignored users so that channel hosts can use !acac
+		// without their messages being recorded (they are in the ignored list)
 		if runner.client.IsUserModerator(message.User.Name) {
 			if message.Message == "!acac" {
 				fmt.Println("Moderator", message.User.Name, "made me speak!", runner.client.Channel)
-				response := runner.chain.GenerateValidMessage(runner.filters) // Generate a valid message
+				response := runner.chain.GenerateValidMessage(runner.filters)
 
 				fmt.Println(TALKING_HEAD, BLUE, runner.client.Channel, ":", response, RESET)
-				runner.client.SendMessage(response)    // Send the message
-				runner.chain.SaveSentMessage(response) // Save the sent message
+				runner.client.SendMessage(response)
+				runner.chain.SaveSentMessage(response)
 				return
 			}
+		}
+
+		// Don't learn messages from ignored users (bots)
+		if runner.client.IsUserIgnored(message.User.Name) {
+			return
 		}
 
 		// Don't learn parroted messages (if enabled)
