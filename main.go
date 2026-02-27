@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"strconv"
 	"strings"
@@ -13,6 +14,7 @@ import (
 	"github.com/notarock/a_c_a_c/pkg/chain"
 	"github.com/notarock/a_c_a_c/pkg/config"
 	"github.com/notarock/a_c_a_c/pkg/filters"
+	"github.com/notarock/a_c_a_c/pkg/metrics"
 	"github.com/notarock/a_c_a_c/pkg/runner"
 	"github.com/notarock/a_c_a_c/pkg/twitch"
 )
@@ -31,6 +33,7 @@ var PROHIBITED_STRINGS = strings.Split(os.Getenv("PROHIBITED_STRINGS"), ",")
 var PROHIBITED_MESSAGES = strings.Split(os.Getenv("PROHIBITED_MESSAGES"), ",")
 
 var GLOBAL_MODERATORS = strings.Split(os.Getenv("GLOBAL_MODERATORS"), ",")
+var METRICS_PORT = os.Getenv("METRICS_PORT")
 
 var MESSAGE_FILE_PATTERN = "%s/%s.txt"             // BASEPATH-CHANNEL.txt
 var SAVED_MESSAGES_FILE_PATTERN = "%s/%s-sent.txt" // BASEPATH-CHANNEL-sent.txt
@@ -68,6 +71,24 @@ func main() {
 
 	if BASE_PATH == "" || TWITCH_USER == "" || TWITCH_OAUTH_STRING == "" {
 		log.Panic("Missing environment variables")
+	}
+
+	if METRICS_PORT != "" {
+		port, err := strconv.Atoi(METRICS_PORT)
+		if err != nil || port <= 0 {
+			log.Panicf("Invalid METRICS_PORT '%s', metrics disabled", METRICS_PORT)
+		} else {
+			go func() {
+				http.Handle("/metrics", metrics.Handler())
+				addr := fmt.Sprintf("localhost:%d", port)
+				log.Printf("Starting metrics server on %s/metrics", addr)
+				if err := http.ListenAndServe(addr, nil); err != nil && err != http.ErrServerClosed {
+					log.Printf("Metrics server error: %v", err)
+				}
+			}()
+		}
+	} else {
+		log.Println("METRICS_PORT not set, metrics disabled")
 	}
 
 	// twitchApiClient, err := helix.NewClient(&helix.Options{
