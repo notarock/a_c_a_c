@@ -80,7 +80,7 @@ func main() {
 		} else {
 			go func() {
 				http.Handle("/metrics", metrics.Handler())
-				addr := fmt.Sprintf("localhost:%d", port)
+				addr := fmt.Sprintf(":%d", port)
 				log.Printf("Starting metrics server on %s/metrics", addr)
 				if err := http.ListenAndServe(addr, nil); err != nil && err != http.ErrServerClosed {
 					log.Printf("Metrics server error: %v", err)
