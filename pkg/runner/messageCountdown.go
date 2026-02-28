@@ -2,6 +2,8 @@ package runner
 
 import (
 	"fmt"
+	"os"
+	"strings"
 	"time"
 
 	gotwitch "github.com/gempir/go-twitch-irc/v4"
@@ -56,6 +58,7 @@ func NewMessageCountdownRunner(config MessageCountdownConfig) *MessageCountdownR
 				fmt.Println(TALKING_HEAD, BLUE, runner.client.Channel, ":", response, RESET)
 				runner.client.SendMessage(response)
 				runner.chain.SaveSentMessage(response)
+				runner.IncrementMessagesSent()
 				return
 			}
 		}
@@ -98,6 +101,7 @@ func NewMessageCountdownRunner(config MessageCountdownConfig) *MessageCountdownR
 		fmt.Println(TALKING_HEAD, BLUE, runner.client.Channel, ":", response, RESET)
 		runner.delayAndSend(response)          // Send the message with delay
 		runner.chain.SaveSentMessage(response) // Save the sent message
+		runner.IncrementMessagesSent()
 	})
 
 	return &runner
@@ -116,10 +120,22 @@ func (m *MessageCountdownRunner) InitMetrics() {
 	if count > 0 {
 		metrics.SetMessagesRead(m.client.Channel, float64(count))
 	}
+
+	sentFilepath := m.chain.GetSentMessagesFilepath()
+	if data, err := os.ReadFile(sentFilepath); err == nil {
+		lines := strings.Count(string(data), "\n")
+		if lines > 0 {
+			metrics.SetMessagesSent(m.client.Channel, float64(lines))
+		}
+	}
 }
 
 func (m *MessageCountdownRunner) IncrementMessagesRead() {
 	metrics.IncMessagesRead(m.client.Channel)
+}
+
+func (m *MessageCountdownRunner) IncrementMessagesSent() {
+	metrics.IncMessagesSent(m.client.Channel)
 }
 
 func (m *MessageCountdownRunner) Run() error {

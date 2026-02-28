@@ -21,6 +21,14 @@ var (
 		[]string{"channel"},
 	)
 
+	messagesSent = promauto.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "acac_messages_sent_total",
+			Help: "Total number of messages sent",
+		},
+		[]string{"channel"},
+	)
+
 	channelsTracked = promauto.NewGauge(
 		prometheus.GaugeOpts{
 			Name: "acac_channels_tracked",
@@ -31,6 +39,14 @@ var (
 
 func IncMessagesRead(channel string) {
 	messagesRead.WithLabelValues(channel).Inc()
+}
+
+func IncMessagesSent(channel string) {
+	messagesSent.WithLabelValues(channel).Inc()
+}
+
+func SetMessagesSent(channel string, value float64) {
+	messagesSent.WithLabelValues(channel).Add(value)
 }
 
 func SetMessagesRead(channel string, value float64) {

@@ -55,6 +55,10 @@ func (c *Chain) GetMessageCount() int {
 	return c.MessageCount
 }
 
+func (c *Chain) GetSentMessagesFilepath() string {
+	return c.sentMessagesFilepath
+}
+
 func (c *Chain) LoadModel() error {
 	lines, err := ReadFile(c.savedMessagesFilepath)
 	if err != nil {
