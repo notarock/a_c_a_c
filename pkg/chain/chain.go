@@ -20,6 +20,8 @@ type Chain struct {
 
 	// To keep track of the last message
 	lastMessage string
+	// Track number of messages loaded from file
+	MessageCount int
 }
 
 type ChainConfig struct {
@@ -49,6 +51,10 @@ func (c *Chain) AddMessage(message string) {
 	c.chain.Add(strings.Split(message, " "))
 }
 
+func (c *Chain) GetMessageCount() int {
+	return c.MessageCount
+}
+
 func (c *Chain) LoadModel() error {
 	lines, err := ReadFile(c.savedMessagesFilepath)
 	if err != nil {
@@ -59,6 +65,7 @@ func (c *Chain) LoadModel() error {
 		c.chain.Add(strings.Split(line, " "))
 	}
 
+	c.MessageCount = len(lines)
 	fmt.Println("Loaded", len(lines), "messages from", c.savedMessagesFilepath, "...")
 
 	return nil

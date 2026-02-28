@@ -174,6 +174,12 @@ func main() {
 		runners = append(runners, r)
 	}
 
+	for _, r := range runners {
+		r.InitMetrics()
+	}
+
+	metrics.SetChannelsTracked(len(runners))
+
 	fmt.Println("Starting runners... Currently", len(runners), "channels configured.")
 
 	for _, runner := range runners {

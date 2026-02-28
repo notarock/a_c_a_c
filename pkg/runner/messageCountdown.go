@@ -8,6 +8,7 @@ import (
 
 	"github.com/notarock/a_c_a_c/pkg/chain"
 	"github.com/notarock/a_c_a_c/pkg/filters"
+	"github.com/notarock/a_c_a_c/pkg/metrics"
 	"github.com/notarock/a_c_a_c/pkg/twitch"
 )
 
@@ -78,6 +79,8 @@ func NewMessageCountdownRunner(config MessageCountdownConfig) *MessageCountdownR
 			return
 		}
 
+		runner.IncrementMessagesRead()
+
 		// Log message
 		fmt.Println(runner.client.Channel, "(", runner.countdown, ")", ":", message.Message)
 
@@ -106,6 +109,17 @@ func (m *MessageCountdownRunner) delayAndSend(message string) {
 		time.Sleep(time.Duration(delay) * time.Second)
 	}
 	m.client.SendMessage(message)
+}
+
+func (m *MessageCountdownRunner) InitMetrics() {
+	count := m.chain.GetMessageCount()
+	if count > 0 {
+		metrics.SetMessagesRead(m.client.Channel, float64(count))
+	}
+}
+
+func (m *MessageCountdownRunner) IncrementMessagesRead() {
+	metrics.IncMessagesRead(m.client.Channel)
 }
 
 func (m *MessageCountdownRunner) Run() error {
