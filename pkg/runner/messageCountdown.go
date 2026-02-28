@@ -53,7 +53,7 @@ func NewMessageCountdownRunner(config MessageCountdownConfig) *MessageCountdownR
 		if runner.client.IsUserModerator(message.User.Name) {
 			if message.Message == "!acac" {
 				fmt.Println("Moderator", message.User.Name, "made me speak!", runner.client.Channel)
-				response := runner.chain.GenerateValidMessage(runner.filters)
+				response := runner.chain.GenerateValidMessage(runner.filters, runner.client.Channel)
 
 				fmt.Println(TALKING_HEAD, BLUE, runner.client.Channel, ":", response, RESET)
 				runner.client.SendMessage(response)
@@ -96,7 +96,7 @@ func NewMessageCountdownRunner(config MessageCountdownConfig) *MessageCountdownR
 
 		runner.countdown = runner.interval // Reset countdown
 
-		response := runner.chain.GenerateValidMessage(runner.filters) // Generate a valid message
+		response := runner.chain.GenerateValidMessage(runner.filters, runner.client.Channel) // Generate a valid message
 
 		fmt.Println(TALKING_HEAD, BLUE, runner.client.Channel, ":", response, RESET)
 		runner.delayAndSend(response)          // Send the message with delay

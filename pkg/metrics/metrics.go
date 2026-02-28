@@ -29,6 +29,14 @@ var (
 		[]string{"channel"},
 	)
 
+	messagesRejected = promauto.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "acac_messages_rejected_total",
+			Help: "Total number of messages rejected due to filters",
+		},
+		[]string{"channel"},
+	)
+
 	channelsTracked = promauto.NewGauge(
 		prometheus.GaugeOpts{
 			Name: "acac_channels_tracked",
@@ -43,6 +51,10 @@ func IncMessagesRead(channel string) {
 
 func IncMessagesSent(channel string) {
 	messagesSent.WithLabelValues(channel).Inc()
+}
+
+func IncMessagesRejected(channel string) {
+	messagesRejected.WithLabelValues(channel).Inc()
 }
 
 func SetMessagesSent(channel string, value float64) {

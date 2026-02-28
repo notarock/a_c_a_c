@@ -30,6 +30,18 @@ func (c *Chain) SaveSentMessage(message string) error {
 }
 
 /**
+ * Save a rejected message (filtered by prohibited content)
+ * */
+func (c *Chain) SaveRejectedMessage(message string) error {
+	err := c.Save(c.rejectedMessagesFilepath, message)
+	if err != nil {
+		return fmt.Errorf("error while saving rejected message: %v", err)
+	}
+
+	return nil
+}
+
+/**
  * Handle saving a message to a file
  * */
 func (c *Chain) Save(path, message string) error {

@@ -12,11 +12,12 @@ import (
  * the chain such as where to save incomming chat messages, sent messages and wether or not we are saving them.
  * */
 type Chain struct {
-	chain                 *gomarkov.Chain
-	sentMessagesFilepath  string
-	savedMessagesFilepath string
-	Saving                bool
-	IgnoreParrots         bool
+	chain                    *gomarkov.Chain
+	sentMessagesFilepath     string
+	savedMessagesFilepath    string
+	rejectedMessagesFilepath string
+	Saving                   bool
+	IgnoreParrots            bool
 
 	// To keep track of the last message
 	lastMessage string
@@ -25,21 +26,23 @@ type Chain struct {
 }
 
 type ChainConfig struct {
-	SentMessagesFilepath  string
-	SavedMessagesFilepath string
-	Saving                bool
-	IgnoreParrots         bool
+	SentMessagesFilepath     string
+	SavedMessagesFilepath    string
+	RejectedMessagesFilepath string
+	Saving                   bool
+	IgnoreParrots            bool
 }
 
 func NewChain(config ChainConfig) (*Chain, error) {
 	chain := gomarkov.NewChain(1) // Not sure what the magic 1 is for
 
 	c := &Chain{
-		chain:                 chain,
-		sentMessagesFilepath:  config.SentMessagesFilepath,
-		savedMessagesFilepath: config.SavedMessagesFilepath,
-		Saving:                config.Saving,
-		IgnoreParrots:         config.IgnoreParrots,
+		chain:                    chain,
+		sentMessagesFilepath:     config.SentMessagesFilepath,
+		savedMessagesFilepath:    config.SavedMessagesFilepath,
+		rejectedMessagesFilepath: config.RejectedMessagesFilepath,
+		Saving:                   config.Saving,
+		IgnoreParrots:            config.IgnoreParrots,
 	}
 
 	err := c.LoadModel()

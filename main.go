@@ -35,8 +35,9 @@ var PROHIBITED_MESSAGES = strings.Split(os.Getenv("PROHIBITED_MESSAGES"), ",")
 var GLOBAL_MODERATORS = strings.Split(os.Getenv("GLOBAL_MODERATORS"), ",")
 var METRICS_PORT = os.Getenv("METRICS_PORT")
 
-var MESSAGE_FILE_PATTERN = "%s/%s.txt"             // BASEPATH-CHANNEL.txt
-var SAVED_MESSAGES_FILE_PATTERN = "%s/%s-sent.txt" // BASEPATH-CHANNEL-sent.txt
+var MESSAGE_FILE_PATTERN = "%s/%s.txt"                    // BASEPATH-CHANNEL.txt
+var SAVED_MESSAGES_FILE_PATTERN = "%s/%s-sent.txt"        // BASEPATH-CHANNEL-sent.txt
+var REJECTED_MESSAGES_FILE_PATTERN = "%s/%s-rejected.txt" // BASEPATH-CHANNEL-rejected.txt
 
 const GREEN = "\033[32m"
 const RED = "\033[31m"
@@ -123,6 +124,7 @@ func main() {
 
 		savedMessagesFilepath := fmt.Sprintf(MESSAGE_FILE_PATTERN, BASE_PATH, channelName)
 		sentMessagesFilepath := fmt.Sprintf(SAVED_MESSAGES_FILE_PATTERN, BASE_PATH, channelName)
+		rejectedMessagesFilepath := fmt.Sprintf(REJECTED_MESSAGES_FILE_PATTERN, BASE_PATH, channelName)
 
 		if ENV != "production" {
 			fmt.Println("Environment: ", ENV)
@@ -130,13 +132,15 @@ func main() {
 			fmt.Println("Base path: ", BASE_PATH)
 			fmt.Println("Saving chat messages to: ", savedMessagesFilepath)
 			fmt.Println("Saving sent messages to: ", sentMessagesFilepath)
+			fmt.Println("Saving rejected messages to: ", rejectedMessagesFilepath)
 		}
 
 		chain, err := chain.NewChain(chain.ChainConfig{
-			Saving:                true,
-			IgnoreParrots:         IGNORE_PARROTS,
-			SavedMessagesFilepath: savedMessagesFilepath,
-			SentMessagesFilepath:  sentMessagesFilepath,
+			Saving:                   true,
+			IgnoreParrots:            IGNORE_PARROTS,
+			SavedMessagesFilepath:    savedMessagesFilepath,
+			SentMessagesFilepath:     sentMessagesFilepath,
+			RejectedMessagesFilepath: rejectedMessagesFilepath,
 		})
 
 		if err != nil {
@@ -212,5 +216,5 @@ func loadAndGenerate(messagesFile string) string {
 		&filters.MessageFilter{
 			Messages: PROHIBITED_MESSAGES,
 		},
-	}) // Generate a valid message from the loaded messages
+	}, "") // Generate a valid message from the loaded messages
 }

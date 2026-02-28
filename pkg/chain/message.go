@@ -6,6 +6,7 @@ import (
 
 	"github.com/mb-14/gomarkov"
 	"github.com/notarock/a_c_a_c/pkg/filters"
+	"github.com/notarock/a_c_a_c/pkg/metrics"
 )
 
 const RED = "\033[31m"
@@ -15,11 +16,13 @@ const RESET = "\033[0m"
 /**
  * Generate a message that was filtered for prohibited content
  * */
-func (c *Chain) GenerateValidMessage(filters []filters.Filter) string {
+func (c *Chain) GenerateValidMessage(filters []filters.Filter, channel string) string {
 	response := c.generateMessage()
 
 	for runFilters(response, filters) {
 		fmt.Println(RED, "Message \"", response, "\" filtered, generating new response...", RESET)
+		c.SaveRejectedMessage(response)
+		metrics.IncMessagesRejected(channel)
 		response = c.generateMessage()
 	}
 
