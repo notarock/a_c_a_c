@@ -57,7 +57,7 @@ jobs:
       update-type: ${{ steps.yq.outputs.type }}
     steps:
       - name: Checkout GitOps repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           persist-credentials: false
           fetch-depth: 0
