@@ -6,7 +6,7 @@ require (
 	github.com/gempir/go-twitch-irc/v4 v4.4.1
 	github.com/joho/godotenv v1.5.1
 	github.com/mb-14/gomarkov v0.0.0-20231120193207-9cbdc8df67a8
-	github.com/nicklaw5/helix/v2 v2.32.0
+	github.com/nicklaw5/helix/v2 v2.34.0
 	github.com/prometheus/client_golang v1.23.2
 	gopkg.in/yaml.v3 v3.0.1
 )
