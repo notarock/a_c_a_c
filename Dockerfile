@@ -13,7 +13,7 @@ ENV GOARCH=amd64
 
 RUN go build -o acac
 
-FROM alpine:3.23.3
+FROM alpine:3.23.4
 
 COPY --from=builder /app/acac /acac
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
