@@ -6,7 +6,6 @@
 ![GitHub License](https://img.shields.io/github/license/notarock/a_c_a_c)
 [![Tuyauterie](https://github.com/notarock/a_c_a_c/actions/workflows/main.yml/badge.svg)](https://github.com/notarock/a_c_a_c/actions/workflows/main.yml)
 
-
 A simple, lightweight Twitch chatbot that learns from chat messages and generates responses using a Markov chain algorithm—similar to BinyotBot and a_n_i_v.
 
 If you enjoy `a_c_a_c`, consider leaving a ⭐ on the repository to show your support!
@@ -16,6 +15,12 @@ If you enjoy `a_c_a_c`, consider leaving a ⭐ on the repository to show your su
 > I'm currently hosting an instance of the bot and can add your Twitch channel upon request.
 >
 > To request `a_c_a_c` in your channel, simply [open an issue using the Hosting Request template](https://github.com/notarock/a_c_a_c/issues/new?template=hosting-request.md) and provide the required information. Once submitted, I’ll take care of the rest and the bot should join your chat shortly after.
+> You can also join the Discord and ask there!
+
+## Community
+
+Want to request `a_c_a_c`, need help, want to suggest features, or report bugs? Join my Discord:
+[![Discord](https://img.shields.io/discord/1534046853383983186?label=Discord&logo=discord)](https://discord.com/invite/YjNAs9k9b8)
 
 ## Features  
 - Reads and learns from chat messages in real-time  
