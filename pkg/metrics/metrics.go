@@ -43,7 +43,19 @@ var (
 			Help: "Number of channels being tracked",
 		},
 	)
+
+	reconnects = promauto.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "acac_reconnects_total",
+			Help: "Total number of connection restarts (supervisor re-runs)",
+		},
+		[]string{"channel"},
+	)
 )
+
+func IncReconnects(channel string) {
+	reconnects.WithLabelValues(channel).Inc()
+}
 
 func IncMessagesRead(channel string) {
 	messagesRead.WithLabelValues(channel).Inc()
