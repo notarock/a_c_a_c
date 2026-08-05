@@ -186,12 +186,34 @@ func main() {
 
 	fmt.Println("Starting runners... Currently", len(runners), "channels configured.")
 
-	for _, runner := range runners {
-		go runner.Run()
+	for _, r := range runners {
+		go supervise(r)
 		time.Sleep(1 * time.Second) // Rate limit the startup (max 20 per 10 seconds)
 	}
 
 	select {}
+}
+
+// supervise restarts a runner when Run() returns on a fatal disconnect.
+func supervise(r *runner.MessageCountdownRunner) {
+	channel := r.Channel()
+	backoff := time.Second
+	const maxBackoff = 5 * time.Minute
+	for {
+		start := time.Now()
+		err := r.Run()
+		log.Printf("Channel %s connection ended after %s: %v — restarting in %s",
+			channel, time.Since(start), err, backoff)
+
+		// Long-lived connection: transient failure, reset backoff.
+		if time.Since(start) > maxBackoff {
+			backoff = time.Second
+		}
+		time.Sleep(backoff)
+		if backoff *= 2; backoff > maxBackoff {
+			backoff = maxBackoff
+		}
+	}
 }
 
 func loadAndGenerate(messagesFile string) string {

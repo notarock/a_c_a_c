@@ -35,6 +35,10 @@ type MessageCountdownConfig struct {
 	Interval int
 }
 
+func (m *MessageCountdownRunner) Channel() string {
+	return m.client.Channel
+}
+
 func NewMessageCountdownRunner(config MessageCountdownConfig) *MessageCountdownRunner {
 	runner := MessageCountdownRunner{
 		client:    config.Client,
