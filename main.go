@@ -204,6 +204,7 @@ func supervise(r *runner.MessageCountdownRunner) {
 		err := r.Run()
 		log.Printf("Channel %s connection ended after %s: %v — restarting in %s",
 			channel, time.Since(start), err, backoff)
+		metrics.IncReconnects(channel)
 
 		// Long-lived connection: transient failure, reset backoff.
 		if time.Since(start) > maxBackoff {
