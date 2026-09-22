@@ -1,4 +1,4 @@
-FROM golang:1.26 AS builder
+FROM golang:1.27 AS builder
 
 WORKDIR /app
 
@@ -13,7 +13,7 @@ ENV GOARCH=amd64
 
 RUN go build -o acac
 
-FROM alpine:3.23.4
+FROM alpine:3.24.2
 
 COPY --from=builder /app/acac /acac
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
