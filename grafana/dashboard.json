@@ -345,7 +345,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "max_over_time(acac_messages_read_total{channel=~\"$channel\"}[5m]) - min_over_time(acac_messages_read_total{channel=~\"$channel\"}[5m])",
+          "expr": "sum by (channel) (increase(acac_messages_read_total{channel=~\"$channel\"}[5m]))",
           "format": "table",
           "hide": false,
           "instant": true,
